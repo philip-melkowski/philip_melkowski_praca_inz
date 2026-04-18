@@ -26,7 +26,7 @@ Branch: `stage/1-data`
 
 1. **[data] Filtrowanie Chatbot Arena**
    - Pobranie datasetu `lmsys/chatbot_arena_conversations` (HuggingFace, gated)
-   - Skrypt: `data/prepare_arena.py`
+   - Skrypt: `data/arena/filter.py`
    - Szczegółowa specyfikacja filtrów: patrz sekcja niżej
 
 2. **[data] Analiza rozkładu po filtrowaniu**
@@ -55,7 +55,7 @@ Branch: `stage/1-data`
 
 7. **[data] Testy jednostkowe skryptów data prep**
    - Framework: `pytest`
-   - Testy dla `prepare_arena.py` i `generate_synthetic.py`
+   - Testy dla `data/arena/filter.py` i `data/synthetic/generate.py`
    - Bez otwierania test setu
 
 ---
