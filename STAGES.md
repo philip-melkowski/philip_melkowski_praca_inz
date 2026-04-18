@@ -34,19 +34,23 @@ Branch: `stage/1-data`
    - Raport zapisany jako `data/analysis_report.md`
 
 3. **[data] Generowanie danych syntetycznych**
-   - Model: Gemini 1.5 Flash (free tier — 15 req/min, 1500/dzień)
-   - Trzy typy: wyraźnie SIMPLE, wyraźnie COMPLEX, graniczne
-   - Cel: ~300–350 rekordów SIMPLE (uzupełnienie do docelowego balansu)
-   - Skrypt: `data/generate_synthetic.py`, zapis do jsonlines
+   - Model: Gemini 2.5 Flash (`gemini-2.5-flash`, free tier — 15 req/min, 1500/dzień)
+   - Trzy typy z celami: 600 SIMPLE, 200 COMPLEX, 100 BORDERLINE
+   - BORDERLINE = przypadki graniczne — etykieta ustalana ręcznie w kroku #4
+   - Few-shot examples: z MT-Bench (`lmsys/mt_bench_human_judgments`) — ręcznie wyselekcjonowane
+   - Kategorie (MT-Bench) generowane przez Gemini razem z pytaniem (jedno wywołanie)
+   - Skrypt: `data/synthetic/generate.py`, zapis do `data/datasets/synthetic.jsonl`
+   > MMLU (`cais/mmlu`) odrzucone — format wielokrotnego wyboru (A/B/C/D) nie pasuje do otwartych zapytań z Areny i syntetycznych; może wprowadzić bias w klasyfikatorze.
 
-4. **[data] Ręczna weryfikacja próbki syntetycznej**
-   - Losowa próbka 15–20% danych syntetycznych
-   - Plik do anotacji + dokument z wynikami weryfikacji
+4. **[data] Etykietowanie BORDERLINE przez LLM-as-Judge**
+   - Słaby model: **Llama 3 8B** (DeepFellow) — proxy dla modeli WEAK z Areny (oryginalne niedostępne w Ollama)
+   - Każde pytanie BORDERLINE → Llama 3 8B generuje odpowiedź → Gemini 2.5 Flash ocenia jakość
+   - Dobra odpowiedź → SIMPLE, słaba → COMPLEX
+   - Skrypt: `data/synthetic/label_borderline.py`
 
-5. **[data] Balansowanie klas**
+5. **[data] Balansowanie klas i budowa finalnego datasetu**
    - Połączenie danych Arena + syntetycznych
-   - Docelowy stosunek: **70% COMPLEX / 30% SIMPLE** (bliżej rzeczywistego rozkładu niż 50/50)
-   - Uzasadnienie: 50/50 przeszacowałoby SIMPLE w produkcji — Arena naturalnie faworyzuje COMPLEX
+   - Docelowy stosunek: **50/50 COMPLEX/SIMPLE** (czystsze metodologicznie)
 
 6. **[data] Podział val/test + walidacja schematu**
    - **Stratyfikowany** split 70/30, `random_state=42` (zachowuje proporcje klas w obu zbiorach)
@@ -55,8 +59,27 @@ Branch: `stage/1-data`
 
 7. **[data] Testy jednostkowe skryptów data prep**
    - Framework: `pytest`
-   - Testy dla `data/arena/filter.py` i `data/synthetic/generate.py`
+   - Testy dla `data/arena/filter.py`, `data/synthetic/generate.py`
    - Bez otwierania test setu
+
+---
+
+## Kategorie zapytań
+
+Wzorowane na MT-Bench (LMSYS) — 8 kategorii pokrywających realne przypadki użycia, porównywalne z literaturą.
+
+| Kategoria | Opis |
+|---|---|
+| `CODING` | Programowanie, debugowanie, code review |
+| `REASONING` | Logiczne wnioskowanie, analiza argumentów |
+| `MATH` | Obliczenia, dowody, zadania matematyczne |
+| `WRITING` | Pisanie esejów, streszczeń, listów, kreatywne pisanie |
+| `ROLEPLAY` | Scenariusze z postacią, symulacje dialogów |
+| `EXTRACTION` | Wyciąganie informacji z tekstu, tłumaczenia, formatowanie |
+| `KNOWLEDGE_STEM` | Nauki ścisłe, technologia, inżynieria, medycyna |
+| `KNOWLEDGE_HUMANITIES` | Historia, prawo, filozofia, nauki społeczne |
+
+Kategorie nadawane przez Gemini razem z generowaniem pytania (jedno wywołanie). Rekordów z Areny — kategoryzacja osobnym skryptem po zebraniu wszystkich danych.
 
 ---
 
