@@ -5,6 +5,7 @@ description = "Add your description here"
 requires-python = ">=3.13"
 dependencies = [
     "datasets>=4.8.4",
+    "numpy>=2.4.4",
     "pandas>=3.0.2",
     "tiktoken>=0.12.0",
 ]
