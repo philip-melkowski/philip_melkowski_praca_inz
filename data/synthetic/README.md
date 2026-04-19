@@ -50,7 +50,7 @@ Każde zapytanie ma przypisaną kategorię generowaną przez Gemini w tym samym 
 
 ## Deduplikacja
 
-Jaccard similarity na znormalizowanych tokenach słownych, próg 0.6. Duplikaty pomijane w trakcie generowania.
+Jaccard similarity na znormalizowanych tokenach słownych, próg 0.5 (obniżony z 0.6 po wykryciu duplikatów w BORDERLINE). Duplikaty pomijane w trakcie generowania.
 
 ## Parametry skryptu
 
@@ -59,7 +59,22 @@ Jaccard similarity na znormalizowanych tokenach słownych, próg 0.6. Duplikaty 
 - Skrypt idempotentny — wznawia od miejsca przerwania
 - Plik wyjściowy: `data/datasets/synthetic.jsonl` (gitignored)
 
-## Uwagi
+## Etykietowanie BORDERLINE
 
-- BORDERLINE rekordy mają tymczasową etykietę `BORDERLINE` — docelowo SIMPLE lub COMPLEX po etykietowaniu przez LLM-as-Judge (issue #4)
-- Skrypt generujący: `data/synthetic/generate.py`
+Po wygenerowaniu wykryto 3 duplikaty semantyczne (Jaccard >= 0.4) — usunięte ręcznie przez `dedup_borderline.py`, brakujące rekordy zregenerowane. Szczegóły: `DEDUP_NOTES.md`.
+
+Etykietowanie przez LLM-as-Judge (`label_borderline.py`):
+1. **Llama 3.1 8B** (DeepFellow na VM) generuje odpowiedź na pytanie BORDERLINE
+2. **Gemini 2.5 Flash** ocenia jakość odpowiedzi → dobra = SIMPLE, słaba = COMPLEX
+
+Uwaga: Llama 3.1 8B użyta jako proxy modelu słabego — oryginalne modele WEAK z Areny (2023) niedostępne. Model nie wchodzi do testowania systemu routera.
+
+Wyniki etykietowania: 79 → SIMPLE, 21 → COMPLEX (z 100 BORDERLINE).
+
+## Finalny rozkład po etykietowaniu
+
+| Etykieta | Liczba |
+|---|---|
+| SIMPLE | 679 |
+| COMPLEX | 221 |
+| **Łącznie** | **900** |
