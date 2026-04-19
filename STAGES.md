@@ -43,10 +43,11 @@ Branch: `stage/1-data`
    > MMLU (`cais/mmlu`) odrzucone — format wielokrotnego wyboru (A/B/C/D) nie pasuje do otwartych zapytań z Areny i syntetycznych; może wprowadzić bias w klasyfikatorze.
 
 4. **[data] Etykietowanie BORDERLINE przez LLM-as-Judge**
+   - Przed etykietowaniem: czyszczenie duplikatów w BORDERLINE (Jaccard próg obniżony do 0.5), regeneracja brakujących
    - Słaby model: **Llama 3 8B** (DeepFellow) — proxy dla modeli WEAK z Areny (oryginalne niedostępne w Ollama)
    - Każde pytanie BORDERLINE → Llama 3 8B generuje odpowiedź → Gemini 2.5 Flash ocenia jakość
    - Dobra odpowiedź → SIMPLE, słaba → COMPLEX
-   - Skrypt: `data/synthetic/label_borderline.py`
+   - Skrypty: `data/synthetic/dedup_borderline.py`, `data/synthetic/label_borderline.py`
 
 5. **[data] Balansowanie klas i budowa finalnego datasetu**
    - Połączenie danych Arena + syntetycznych
