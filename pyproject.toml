@@ -1,0 +1,13 @@
+[project]
+name = "deepfellow-router"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.13"
+dependencies = [
+    "datasets>=4.8.4",
+    "google-genai>=1.73.1",
+    "httpx>=0.28.1",
+    "numpy>=2.4.4",
+    "pandas>=3.0.2",
+    "tiktoken>=0.12.0",
+]

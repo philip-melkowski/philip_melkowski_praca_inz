@@ -26,32 +26,109 @@ Branch: `stage/1-data`
 
 1. **[data] Filtrowanie Chatbot Arena**
    - Pobranie datasetu `lmsys/chatbot_arena_conversations` (HuggingFace, gated)
-   - Filtry: STRONG vs WEAK, single-turn, angielski, ≥16 tokenów
-   - Mapowanie głosowań → SIMPLE/COMPLEX (tie-bothbad odrzucane)
-   - Skrypt: `data/prepare_arena.py`
+   - Skrypt: `data/arena/filter.py`
+   - Szczegółowa specyfikacja filtrów: patrz sekcja niżej
 
 2. **[data] Analiza rozkładu po filtrowaniu**
    - Statystyki: rozkład klas, długości tokenów, kategorie
-   - Raport zapisany jako `data/analysis_report.md`
+   - Raport zapisany jako `docs/reports/arena_analysis.md`
 
 3. **[data] Generowanie danych syntetycznych**
-   - LLM inny niż Qwen 1.5B i Llama 70B
-   - Trzy typy: wyraźnie SIMPLE, wyraźnie COMPLEX, graniczne
-   - Skrypt: `data/generate_synthetic.py`, zapis do jsonlines
+   - Model: Gemini 2.5 Flash (`gemini-2.5-flash`, free tier — 15 req/min, 1500/dzień)
+   - Trzy typy z celami: 600 SIMPLE, 200 COMPLEX, 100 BORDERLINE
+   - BORDERLINE = przypadki graniczne — etykieta ustalana ręcznie w kroku #4
+   - Few-shot examples: z MT-Bench (`lmsys/mt_bench_human_judgments`) — ręcznie wyselekcjonowane
+   - Kategorie (MT-Bench) generowane przez Gemini razem z pytaniem (jedno wywołanie)
+   - Skrypt: `data/synthetic/generate.py`, zapis do `data/datasets/synthetic.jsonl`
+   > MMLU (`cais/mmlu`) odrzucone — format wielokrotnego wyboru (A/B/C/D) nie pasuje do otwartych zapytań z Areny i syntetycznych; może wprowadzić bias w klasyfikatorze.
 
-4. **[data] Ręczna weryfikacja próbki syntetycznej**
-   - Losowa próbka 15–20% danych syntetycznych
-   - Plik do anotacji + dokument z wynikami weryfikacji
+4. **[data] Etykietowanie BORDERLINE przez LLM-as-Judge**
+   - Przed etykietowaniem: czyszczenie duplikatów w BORDERLINE (Jaccard próg obniżony do 0.5), regeneracja brakujących
+   - Słaby model: **Llama 3 8B** (DeepFellow) — proxy dla modeli WEAK z Areny (oryginalne niedostępne w Ollama)
+   - Każde pytanie BORDERLINE → Llama 3 8B generuje odpowiedź → Gemini 2.5 Flash ocenia jakość
+   - Dobra odpowiedź → SIMPLE, słaba → COMPLEX
+   - Skrypty: `data/synthetic/dedup_borderline.py`, `data/synthetic/label_borderline.py`
 
-5. **[data] Balansowanie klas**
-   - Połączenie danych Arena + syntetycznych
-   - Wyrównanie proporcji SIMPLE/COMPLEX
+5. **[data] Kategoryzacja rekordów z Areny**
+   - Rekordy z Areny nie mają kategorii (pole `category` = `UNKNOWN`)
+   - Gemini 2.5 Flash przypisuje kategorię do każdego promptu z Areny
+   - Kategorie: CODING, REASONING, MATH, WRITING, ROLEPLAY, EXTRACTION, KNOWLEDGE_STEM, KNOWLEDGE_HUMANITIES (brak OTHER — wzorowane na MT-Bench)
+   - Skrypt: `data/arena/categorize.py`, aktualizuje `arena_filtered.jsonl`
+   - Po kategoryzacji: przegląd 14 rekordów OTHER — 6 usuniętych (śmieć: odpowiedzi modeli, system prompty), 8 przekategoryzowanych
+   - Skrypt: `data/arena/fix_other.py`; wynik: 1732 rekordów (było 1738)
+   - Szczegóły decyzji: `docs/decisions/ARENA_OTHER_CLEANUP.md`
+   - Raport końcowy: `docs/reports/arena_analysis.md`
 
-6. **[data] Podział val/test + walidacja schematu**
-   - Deterministyczny split 70/30
-   - Walidacja schematu: `query`, `label`, `category`, `source`
-   - Zapis do `data/datasets/` (gitignored)
+6. **[data] Budowa finalnego datasetu**
+   - Połączenie danych Arena (z kategoriami) + syntetycznych
+   - Bez sztucznego balansowania — zachowujemy naturalny rozkład
+   - Uzasadnienie: podcinanie COMPLEX = utrata realnych danych z Areny; rozkład uwzględniany przy kalibracji (ważone F1, stratyfikowany split)
+   - Finalny rozkład: COMPLEX 1687, SIMPLE 945 (łącznie 2632)
+   - Stratyfikowany split 70/30, `random_state=42`: validation 1841, test 791
+   - Walidacja schematu: odrzuca rekordy z błędną etykietą, kategorią spoza MT-Bench lub pustym query
+   - Skrypt: `data/build_dataset.py`; raport: `docs/reports/dataset_build.md`
 
 7. **[data] Testy jednostkowe skryptów data prep**
-   - Testy dla `prepare_arena.py` i `generate_synthetic.py`
+   - Framework: `pytest`
+   - Testy dla `data/arena/filter.py`, `data/synthetic/generate.py`
    - Bez otwierania test setu
+
+---
+
+## Kategorie zapytań
+
+Wzorowane na MT-Bench (LMSYS) — 8 kategorii pokrywających realne przypadki użycia, porównywalne z literaturą.
+
+| Kategoria | Opis |
+|---|---|
+| `CODING` | Programowanie, debugowanie, code review |
+| `REASONING` | Logiczne wnioskowanie, analiza argumentów |
+| `MATH` | Obliczenia, dowody, zadania matematyczne |
+| `WRITING` | Pisanie esejów, streszczeń, listów, kreatywne pisanie |
+| `ROLEPLAY` | Scenariusze z postacią, symulacje dialogów |
+| `EXTRACTION` | Wyciąganie informacji z tekstu, tłumaczenia, formatowanie |
+| `KNOWLEDGE_STEM` | Nauki ścisłe, technologia, inżynieria, medycyna |
+| `KNOWLEDGE_HUMANITIES` | Historia, prawo, filozofia, nauki społeczne |
+
+Kategorie nadawane przez Gemini razem z generowaniem pytania (jedno wywołanie). Rekordów z Areny — kategoryzacja osobnym skryptem po zebraniu wszystkich danych.
+
+---
+
+## Specyfikacja filtrowania Chatbot Arena
+
+### Podział modeli
+
+Źródło Elo: https://lmsys.org/blog/2023-06-22-leaderboard/ (dane z okresu kwiecień–czerwiec 2023).
+Kryterium podziału: próg liczbowy — WEAK ≤ 980, MEDIUM 981–1150, STRONG ≥ 1151.
+
+**STRONG** (Elo ≥ 1151 → wymagają mocnego modelu → COMPLEX):
+- `gpt-4` (1227), `claude-v1` (1178), `claude-instant-v1` (1156)
+
+**WEAK** (Elo ≤ 980 → słaby model wystarczył → SIMPLE):
+- `llama-13b` (826), `dolly-v2-12b` (850), `stablelm-tuned-alpha-7b` (871), `fastchat-t5-3b` (897), `chatglm-6b` (905), `oasst-pythia-12b` (924), `alpaca-13b` (930), `RWKV-4-Raven-14B` (950), `mpt-7b-chat` (956)
+
+**MEDIUM — wykluczone** (Elo 981–1150 → niejednoznaczny sygnał):
+- `gpt4all-13b-snoozy` (986), `koala-13b` (992), `vicuna-7b` (1008), `palm-2` (1038), `wizardlm-13b` (1048), `vicuna-13b` (1061), `guanaco-33b` (1065), `gpt-3.5-turbo` (1130)
+
+Bierzemy tylko pary STRONG vs WEAK (obie strony muszą należeć do tych grup).
+
+### Mapowanie głosowań na etykiety
+
+| Wynik głosowania | Etykieta | Uzasadnienie |
+|---|---|---|
+| STRONG wygrał | COMPLEX | Słaby model nie wystarczył |
+| WEAK wygrał | SIMPLE | Słaby model poradził sobie |
+| tie (normalne) | SIMPLE | Słaby model był wystarczający |
+| tie (bothbad) | — odrzucamy | Brak sygnału jakości |
+
+### Filtry
+
+1. **Para modeli** — obie strony muszą należeć do STRONG lub WEAK (nie MEDIUM)
+2. **Single-turn** — wykluczamy całe konwersacje wieloturowe (nie tylko pierwszą turę)
+3. **Język** — `language == "English"` (pole z datasetu, bez zewnętrznych bibliotek)
+4. **Minimalna długość** — `len(tiktoken.get_encoding("cl100k_base").encode(query)) >= 16`
+5. **Duplikaty** — `drop_duplicates(subset=["query"])`, przy kolizji zachowujemy rekord z niższym `question_id` (deterministyczne)
+
+### Logowanie
+
+Przy każdym filtrze logujemy liczebność przed i po — pełny audit trail.
