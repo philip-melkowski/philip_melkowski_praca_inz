@@ -1,9 +1,9 @@
-# Analiza rozkładu — Chatbot Arena (filtered)
+# 02 — Analiza rozkładu — Chatbot Arena (filtered)
 
-Wygenerowane przez: `data/arena/analyze.py`
+Skrypt: `data/arena/analyze.py`
 
-Po czyszczeniu kategorii OTHER (`data/arena/fix_other.py`) — usunięto 6 śmieciowych rekordów,
-8 przekategoryzowano. Szczegóły: `docs/decisions/ARENA_OTHER_CLEANUP.md`.
+Liczby poniżej odzwierciedlają stan po czyszczeniu OTHER (krok 04) — 1732 rekordów.
+Szczegóły kategoryzacji i czyszczenia: `docs/stage1/reports/04_arena_categorization.md`
 
 ## Rozkład etykiet
 

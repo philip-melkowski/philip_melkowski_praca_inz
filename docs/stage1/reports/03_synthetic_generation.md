@@ -1,4 +1,4 @@
-# Generowanie danych syntetycznych
+# 03 — Generowanie danych syntetycznych
 
 Skrypt: `data/synthetic/generate.py`
 
@@ -72,7 +72,7 @@ Skrypt: `data/synthetic/label_borderline.py`
 
 Po wygenerowaniu wykryto 3 duplikaty semantyczne (Jaccard >= 0.4) — usunięte przez
 `data/synthetic/dedup_borderline.py`, brakujące rekordy zregenerowane. Szczegóły:
-`docs/decisions/DEDUP_NOTES.md`.
+`docs/stage1/decisions/DEDUP_NOTES.md`.
 
 Etykietowanie przez LLM-as-Judge:
 1. **Llama 3.1 8B** (DeepFellow na VM) generuje odpowiedź na pytanie BORDERLINE

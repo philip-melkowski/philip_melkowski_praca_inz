@@ -1,4 +1,4 @@
-# Budowa finalnego datasetu
+# 05 — Budowa finalnego datasetu
 
 Skrypt: `data/build_dataset.py`
 

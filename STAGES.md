@@ -39,7 +39,7 @@ Branch: `stage/1-data`
 
 2. **[data] Analiza rozkładu po filtrowaniu**
    - Statystyki: rozkład klas, długości tokenów, kategorie
-   - Raport zapisany jako `docs/stage1/reports/arena_analysis.md`
+   - Raport zapisany jako `docs/stage1/reports/02_arena_analysis.md`
 
 3. **[data] Generowanie danych syntetycznych**
    - Model: Gemini 2.5 Flash (`gemini-2.5-flash`, free tier — 15 req/min, 1500/dzień)
@@ -65,7 +65,7 @@ Branch: `stage/1-data`
    - Po kategoryzacji: przegląd 14 rekordów OTHER — 6 usuniętych (śmieć: odpowiedzi modeli, system prompty), 8 przekategoryzowanych
    - Skrypt: `data/arena/fix_other.py`; wynik: 1732 rekordów (było 1738)
    - Szczegóły decyzji: `docs/stage1/decisions/ARENA_OTHER_CLEANUP.md`
-   - Raport końcowy: `docs/stage1/reports/arena_analysis.md`
+   - Raport końcowy: `docs/stage1/reports/02_arena_analysis.md`
 
 6. **[data] Budowa finalnego datasetu**
    - Połączenie danych Arena (z kategoriami) + syntetycznych
@@ -74,7 +74,7 @@ Branch: `stage/1-data`
    - Finalny rozkład: COMPLEX 1687, SIMPLE 945 (łącznie 2632)
    - Stratyfikowany split 70/30, `random_state=42`: validation 1841, test 791
    - Walidacja schematu: odrzuca rekordy z błędną etykietą, kategorią spoza MT-Bench lub pustym query
-   - Skrypt: `data/build_dataset.py`; raport: `docs/stage1/reports/dataset_build.md`
+   - Skrypt: `data/build_dataset.py`; raport: `docs/stage1/reports/05_dataset_build.md`
 
 7. **[data] Testy jednostkowe skryptów data prep**  *(odkładane na później)*
    - Framework: `pytest`
