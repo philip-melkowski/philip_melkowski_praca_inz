@@ -31,7 +31,7 @@ Branch: `stage/1-data`
 
 2. **[data] Analiza rozkładu po filtrowaniu**
    - Statystyki: rozkład klas, długości tokenów, kategorie
-   - Raport zapisany jako `data/analysis_report.md`
+   - Raport zapisany jako `docs/reports/arena_analysis.md`
 
 3. **[data] Generowanie danych syntetycznych**
    - Model: Gemini 2.5 Flash (`gemini-2.5-flash`, free tier — 15 req/min, 1500/dzień)
@@ -49,14 +49,23 @@ Branch: `stage/1-data`
    - Dobra odpowiedź → SIMPLE, słaba → COMPLEX
    - Skrypty: `data/synthetic/dedup_borderline.py`, `data/synthetic/label_borderline.py`
 
-5. **[data] Balansowanie klas i budowa finalnego datasetu**
-   - Połączenie danych Arena + syntetycznych
-   - Docelowy stosunek: **50/50 COMPLEX/SIMPLE** (czystsze metodologicznie)
+5. **[data] Kategoryzacja rekordów z Areny**
+   - Rekordy z Areny nie mają kategorii (pole `category` = `UNKNOWN`)
+   - Gemini 2.5 Flash przypisuje kategorię do każdego promptu z Areny
+   - Kategorie: CODING, REASONING, MATH, WRITING, ROLEPLAY, EXTRACTION, KNOWLEDGE_STEM, KNOWLEDGE_HUMANITIES (brak OTHER — wzorowane na MT-Bench)
+   - Skrypt: `data/arena/categorize.py`, aktualizuje `arena_filtered.jsonl`
+   - Po kategoryzacji: przegląd 14 rekordów OTHER — 6 usuniętych (śmieć: odpowiedzi modeli, system prompty), 8 przekategoryzowanych
+   - Skrypt: `data/arena/fix_other.py`; wynik: 1732 rekordów (było 1738)
+   - Szczegóły decyzji: `docs/decisions/ARENA_OTHER_CLEANUP.md`
+   - Raport końcowy: `docs/reports/arena_analysis.md`
 
-6. **[data] Podział val/test + walidacja schematu**
-   - **Stratyfikowany** split 70/30, `random_state=42` (zachowuje proporcje klas w obu zbiorach)
-   - Walidacja schematu: `query`, `label`, `category`, `source`
-   - Zapis do `data/datasets/` (gitignored)
+6. **[data] Budowa finalnego datasetu**
+   - Połączenie danych Arena (z kategoriami) + syntetycznych
+   - Bez sztucznego balansowania — zachowujemy naturalny rozkład
+   - Uzasadnienie: podcinanie COMPLEX = utrata realnych danych z Areny; rozkład uwzględniany przy kalibracji (ważone F1, stratyfikowany split)
+   - Finalny rozkład: COMPLEX ~1691, SIMPLE ~947 (łącznie ~2638)
+   - Stratyfikowany split 70/30, `random_state=42`
+   - Skrypt: `data/build_dataset.py`
 
 7. **[data] Testy jednostkowe skryptów data prep**
    - Framework: `pytest`
