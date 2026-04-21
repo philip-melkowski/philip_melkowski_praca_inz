@@ -26,7 +26,6 @@ VALID_LABELS = {"SIMPLE", "COMPLEX"}
 VALID_CATEGORIES = {
     "CODING", "REASONING", "MATH", "WRITING",
     "ROLEPLAY", "EXTRACTION", "KNOWLEDGE_STEM", "KNOWLEDGE_HUMANITIES",
-    "OTHER",
 }
 
 
@@ -62,6 +61,9 @@ def validate(records: list[dict]) -> list[dict]:
             skipped += 1
             continue
         if r["label"] not in VALID_LABELS:
+            skipped += 1
+            continue
+        if r["category"] not in VALID_CATEGORIES:
             skipped += 1
             continue
         if not r["query"].strip():

@@ -63,9 +63,10 @@ Branch: `stage/1-data`
    - Połączenie danych Arena (z kategoriami) + syntetycznych
    - Bez sztucznego balansowania — zachowujemy naturalny rozkład
    - Uzasadnienie: podcinanie COMPLEX = utrata realnych danych z Areny; rozkład uwzględniany przy kalibracji (ważone F1, stratyfikowany split)
-   - Finalny rozkład: COMPLEX ~1691, SIMPLE ~947 (łącznie ~2638)
-   - Stratyfikowany split 70/30, `random_state=42`
-   - Skrypt: `data/build_dataset.py`
+   - Finalny rozkład: COMPLEX 1687, SIMPLE 945 (łącznie 2632)
+   - Stratyfikowany split 70/30, `random_state=42`: validation 1841, test 791
+   - Walidacja schematu: odrzuca rekordy z błędną etykietą, kategorią spoza MT-Bench lub pustym query
+   - Skrypt: `data/build_dataset.py`; raport: `docs/reports/dataset_build.md`
 
 7. **[data] Testy jednostkowe skryptów data prep**
    - Framework: `pytest`
