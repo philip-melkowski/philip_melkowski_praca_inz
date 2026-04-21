@@ -1,4 +1,3 @@
----
 # Known Issues — Arena dataset
 
 ## Niepoprawne oznaczenia języka
@@ -18,4 +17,4 @@ jako dodatkowy filtr po `language == "English"`.
 
 Zaobserwowano obecność semantycznie podobnych promptów (np. "David has three sisters...").
 Filtr w `data/arena/filter.py` deduplikuje po dokładnym tekście promptu, ale nie łapie
-duplikatów semantycznych. Przy obecnej skali (~1738 rekordów) wpływ jest pomijalny.
+duplikatów semantycznych. Przy obecnej skali (1732 rekordów po czyszczeniu OTHER) wpływ jest pomijalny.

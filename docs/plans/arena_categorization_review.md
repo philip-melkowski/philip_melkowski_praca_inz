@@ -30,7 +30,7 @@ Dla każdej z 9 kategorii wylosować 3–5 rekordów i sprawdzić ręcznie czy k
 do treści zapytania.
 
 Kategorie: WRITING, CODING, REASONING, KNOWLEDGE_STEM, KNOWLEDGE_HUMANITIES, MATH,
-EXTRACTION, ROLEPLAY, OTHER
+EXTRACTION, ROLEPLAY
 
 ### 4. Decyzja
 
