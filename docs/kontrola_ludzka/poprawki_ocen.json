@@ -1,0 +1,8 @@
+{"opis": "Poprawki ocen autora wprowadzone przez Claude za zgodą autora, tylko tam, gdzie odpowiedź zawiera obiektywnie sprawdzalny błąd. Kandydatów wskazano, patrząc na rozbieżności z sędzią, więc zgodność z sędzią po poprawkach jest zawyżona; oryginał (zadanie_warstwowe.md) nie został zmieniony.",
+ "poprawki": {
+  "8":  {"bylo": 5, "jest": 1, "powod": "opis końca Interstellar niezgodny z filmem"},
+  "41": {"bylo": 5, "jest": 1, "powod": "zapytanie SQL dla 2023-05-15 zwraca 2023-02-27, a nie 2023-04-01"},
+  "48": {"bylo": 4, "jest": 2, "powod": "porada 'nie udawaj martwego przy grizzly' odwrotna do standardowych zaleceń"},
+  "51": {"bylo": 5, "jest": 1, "powod": "SERIOUSLY ma 9 liter, hasło wymaga 8"},
+  "53": {"bylo": 5, "jest": 2, "powod": "program przerywa po liczbie ujemnej zamiast ją pomijać (wbrew poleceniu)"},
+  "61": {"bylo": 5, "jest": 3, "powod": "kod poprawny (7), ale podany wynik '6' błędny"}}}

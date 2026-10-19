@@ -1,0 +1,702 @@
+[
+ {
+  "n": 1,
+  "id": "chatbot_arena-01642",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 2
+ },
+ {
+  "n": 2,
+  "id": "llm_generated-02049",
+  "model": "Qwen/Qwen3.8-27B-FP8",
+  "sample": 0,
+  "judge_score": 5
+ },
+ {
+  "n": 3,
+  "id": "chatbot_arena-01453",
+  "model": "Qwen/Qwen3.8-27B-FP8",
+  "sample": 0,
+  "judge_score": 5
+ },
+ {
+  "n": 4,
+  "id": "wildchat-02830",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 2
+ },
+ {
+  "n": 5,
+  "id": "chatbot_arena-00218",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 5
+ },
+ {
+  "n": 6,
+  "id": "chatbot_arena-00050",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 2
+ },
+ {
+  "n": 7,
+  "id": "chatbot_arena-01592",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 3
+ },
+ {
+  "n": 8,
+  "id": "chatbot_arena-00739",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 1
+ },
+ {
+  "n": 9,
+  "id": "wildchat-02966",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 4
+ },
+ {
+  "n": 10,
+  "id": "wildchat-02870",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 2
+ },
+ {
+  "n": 11,
+  "id": "llm_generated-01991",
+  "model": "Qwen/Qwen3.8-27B-FP8",
+  "sample": 0,
+  "judge_score": 5
+ },
+ {
+  "n": 12,
+  "id": "llm_generated-01846",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 4
+ },
+ {
+  "n": 13,
+  "id": "chatbot_arena-01351",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 1
+ },
+ {
+  "n": 14,
+  "id": "wildchat-02248",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 1
+ },
+ {
+  "n": 15,
+  "id": "chatbot_arena-01171",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 1
+ },
+ {
+  "n": 16,
+  "id": "wildchat-02770",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 2
+ },
+ {
+  "n": 17,
+  "id": "chatbot_arena-00095",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 5
+ },
+ {
+  "n": 18,
+  "id": "chatbot_arena-01312",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 4
+ },
+ {
+  "n": 19,
+  "id": "chatbot_arena-01280",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 2
+ },
+ {
+  "n": 20,
+  "id": "chatbot_arena-00815",
+  "model": "Qwen/Qwen3.8-27B-FP8",
+  "sample": 0,
+  "judge_score": 3
+ },
+ {
+  "n": 21,
+  "id": "chatbot_arena-00174",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 4
+ },
+ {
+  "n": 22,
+  "id": "chatbot_arena-01345",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 1
+ },
+ {
+  "n": 23,
+  "id": "wildchat-02416",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 2
+ },
+ {
+  "n": 24,
+  "id": "wildchat-02280",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 4
+ },
+ {
+  "n": 25,
+  "id": "wildchat-02335",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 2
+ },
+ {
+  "n": 26,
+  "id": "chatbot_arena-00629",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 2
+ },
+ {
+  "n": 27,
+  "id": "wildchat-02558",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 2
+ },
+ {
+  "n": 28,
+  "id": "chatbot_arena-00237",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 3
+ },
+ {
+  "n": 29,
+  "id": "wildchat-02348",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 4
+ },
+ {
+  "n": 30,
+  "id": "chatbot_arena-00050",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 3
+ },
+ {
+  "n": 31,
+  "id": "wildchat-02634",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 3
+ },
+ {
+  "n": 32,
+  "id": "wildchat-02870",
+  "model": "Qwen/Qwen3.8-27B-FP8",
+  "sample": 0,
+  "judge_score": 5
+ },
+ {
+  "n": 33,
+  "id": "llm_generated-01807",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 4
+ },
+ {
+  "n": 34,
+  "id": "wildchat-02809",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 4
+ },
+ {
+  "n": 35,
+  "id": "chatbot_arena-01524",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 4
+ },
+ {
+  "n": 36,
+  "id": "wildchat-02277",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 4
+ },
+ {
+  "n": 37,
+  "id": "chatbot_arena-01268",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 5
+ },
+ {
+  "n": 38,
+  "id": "chatbot_arena-00486",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 2
+ },
+ {
+  "n": 39,
+  "id": "chatbot_arena-00642",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 3
+ },
+ {
+  "n": 40,
+  "id": "chatbot_arena-00890",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 1
+ },
+ {
+  "n": 41,
+  "id": "chatbot_arena-01655",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 1
+ },
+ {
+  "n": 42,
+  "id": "wildchat-02393",
+  "model": "Qwen/Qwen3.8-27B-FP8",
+  "sample": 0,
+  "judge_score": 1
+ },
+ {
+  "n": 43,
+  "id": "wildchat-02663",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 5
+ },
+ {
+  "n": 44,
+  "id": "chatbot_arena-00874",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 1
+ },
+ {
+  "n": 45,
+  "id": "chatbot_arena-01316",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 2
+ },
+ {
+  "n": 46,
+  "id": "chatbot_arena-01592",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 4
+ },
+ {
+  "n": 47,
+  "id": "wildchat-03060",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 5
+ },
+ {
+  "n": 48,
+  "id": "llm_generated-01881",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 1
+ },
+ {
+  "n": 49,
+  "id": "wildchat-02748",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 2
+ },
+ {
+  "n": 50,
+  "id": "wildchat-03098",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 3
+ },
+ {
+  "n": 51,
+  "id": "chatbot_arena-01021",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 1
+ },
+ {
+  "n": 52,
+  "id": "chatbot_arena-00862",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 3
+ },
+ {
+  "n": 53,
+  "id": "wildchat-02992",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 3
+ },
+ {
+  "n": 54,
+  "id": "wildchat-02789",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 2
+ },
+ {
+  "n": 55,
+  "id": "chatbot_arena-00758",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 2
+ },
+ {
+  "n": 56,
+  "id": "wildchat-02926",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 2
+ },
+ {
+  "n": 57,
+  "id": "chatbot_arena-01435",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 3
+ },
+ {
+  "n": 58,
+  "id": "chatbot_arena-00764",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 3
+ },
+ {
+  "n": 59,
+  "id": "wildchat-02917",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 4
+ },
+ {
+  "n": 60,
+  "id": "chatbot_arena-01054",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 4
+ },
+ {
+  "n": 61,
+  "id": "chatbot_arena-00877",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 3
+ },
+ {
+  "n": 62,
+  "id": "chatbot_arena-01345",
+  "model": "Qwen/Qwen3.8-27B-FP8",
+  "sample": 0,
+  "judge_score": 5
+ },
+ {
+  "n": 63,
+  "id": "chatbot_arena-00332",
+  "model": "Qwen/Qwen3.8-27B-FP8",
+  "sample": 0,
+  "judge_score": 5
+ },
+ {
+  "n": 64,
+  "id": "llm_generated-01772",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 2
+ },
+ {
+  "n": 65,
+  "id": "chatbot_arena-01408",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 1
+ },
+ {
+  "n": 66,
+  "id": "chatbot_arena-01270",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 5
+ },
+ {
+  "n": 67,
+  "id": "chatbot_arena-00568",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 2
+ },
+ {
+  "n": 68,
+  "id": "llm_generated-02001",
+  "model": "Qwen/Qwen3.8-27B-FP8",
+  "sample": 0,
+  "judge_score": 5
+ },
+ {
+  "n": 69,
+  "id": "chatbot_arena-01269",
+  "model": "Qwen/Qwen3.8-27B-FP8",
+  "sample": 0,
+  "judge_score": 5
+ },
+ {
+  "n": 70,
+  "id": "llm_generated-01934",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 5
+ },
+ {
+  "n": 71,
+  "id": "wildchat-02725",
+  "model": "Qwen/Qwen3.8-27B-FP8",
+  "sample": 0,
+  "judge_score": 5
+ },
+ {
+  "n": 72,
+  "id": "chatbot_arena-01659",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 3
+ },
+ {
+  "n": 73,
+  "id": "chatbot_arena-01247",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 4
+ },
+ {
+  "n": 74,
+  "id": "chatbot_arena-00666",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 1
+ },
+ {
+  "n": 75,
+  "id": "chatbot_arena-00228",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 5
+ },
+ {
+  "n": 76,
+  "id": "llm_generated-02139",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 4
+ },
+ {
+  "n": 77,
+  "id": "chatbot_arena-00077",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 1
+ },
+ {
+  "n": 78,
+  "id": "chatbot_arena-00810",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 1
+ },
+ {
+  "n": 79,
+  "id": "wildchat-02456",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 1
+ },
+ {
+  "n": 80,
+  "id": "chatbot_arena-01393",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 2
+ },
+ {
+  "n": 81,
+  "id": "llm_generated-01729",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 4
+ },
+ {
+  "n": 82,
+  "id": "chatbot_arena-01546",
+  "model": "Qwen/Qwen3.8-27B-FP8",
+  "sample": 0,
+  "judge_score": 5
+ },
+ {
+  "n": 83,
+  "id": "wildchat-02875",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 1
+ },
+ {
+  "n": 84,
+  "id": "wildchat-03022",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 2
+ },
+ {
+  "n": 85,
+  "id": "chatbot_arena-01492",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 3
+ },
+ {
+  "n": 86,
+  "id": "wildchat-02582",
+  "model": "Qwen/Qwen3.8-27B-FP8",
+  "sample": 0,
+  "judge_score": 1
+ },
+ {
+  "n": 87,
+  "id": "chatbot_arena-01586",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 3
+ },
+ {
+  "n": 88,
+  "id": "chatbot_arena-01233",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 4
+ },
+ {
+  "n": 89,
+  "id": "wildchat-02614",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 4
+ },
+ {
+  "n": 90,
+  "id": "chatbot_arena-00208",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 3
+ },
+ {
+  "n": 91,
+  "id": "wildchat-03087",
+  "model": "Qwen/Qwen3.8-27B-FP8",
+  "sample": 0,
+  "judge_score": 5
+ },
+ {
+  "n": 92,
+  "id": "wildchat-02429",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 4
+ },
+ {
+  "n": 93,
+  "id": "wildchat-03147",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 3
+ },
+ {
+  "n": 94,
+  "id": "wildchat-03173",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 5
+ },
+ {
+  "n": 95,
+  "id": "chatbot_arena-01528",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 1
+ },
+ {
+  "n": 96,
+  "id": "chatbot_arena-00571",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 1
+ },
+ {
+  "n": 97,
+  "id": "chatbot_arena-01707",
+  "model": "qwen3:8b",
+  "sample": 0,
+  "judge_score": 3
+ },
+ {
+  "n": 98,
+  "id": "wildchat-02356",
+  "model": "qwen3:8b",
+  "sample": 2,
+  "judge_score": 4
+ },
+ {
+  "n": 99,
+  "id": "chatbot_arena-00235",
+  "model": "Qwen/Qwen3.8-27B-FP8",
+  "sample": 0,
+  "judge_score": 3
+ },
+ {
+  "n": 100,
+  "id": "wildchat-02891",
+  "model": "qwen3:8b",
+  "sample": 1,
+  "judge_score": 3
+ }
+]
