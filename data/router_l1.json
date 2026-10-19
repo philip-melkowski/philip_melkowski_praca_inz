@@ -1,0 +1,89 @@
+{
+ "complex_phrases": [
+  "analyze",
+  "compare",
+  "contrast",
+  "differentiate",
+  "examine",
+  "distinguish",
+  "organize",
+  "relate",
+  "evaluate",
+  "assess",
+  "critique",
+  "justify",
+  "appraise",
+  "argue",
+  "defend",
+  "judge",
+  "weigh",
+  "recommend",
+  "implement",
+  "solve",
+  "demonstrate",
+  "calculate",
+  "compute",
+  "design",
+  "build",
+  "develop",
+  "construct",
+  "generate",
+  "plan",
+  "compose",
+  "formulate",
+  "invent",
+  "optimize",
+  "refactor",
+  "architect",
+  "debug",
+  "investigate",
+  "explain why",
+  "step by step",
+  "pros and cons",
+  "trade-offs",
+  "review code"
+ ],
+ "simple_phrases": [
+  "what is",
+  "who is",
+  "when did",
+  "where is",
+  "define",
+  "name",
+  "identify",
+  "recall",
+  "state",
+  "repeat",
+  "classify",
+  "describe",
+  "locate",
+  "recognize",
+  "summarize",
+  "translate",
+  "paraphrase",
+  "list",
+  "format",
+  "convert",
+  "is this",
+  "yes or no"
+ ],
+ "points": {
+  "complex_phrase": 1.0,
+  "simple_phrase": -1.0,
+  "url": 1.0,
+  "length": [
+   {
+    "chars": 400,
+    "points": 1.0
+   },
+   {
+    "chars": 1500,
+    "points": 1.0
+   }
+  ],
+  "digits": {
+   "over": 0.1,
+   "points": -1.0
+  }
+ }
+}
