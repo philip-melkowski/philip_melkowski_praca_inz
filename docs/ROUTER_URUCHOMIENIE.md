@@ -31,6 +31,8 @@ curl -X POST http://localhost:8086/admin/services/router \
         "small_model": "qwen3:8b",
         "large_model": "Qwen/Qwen3.8-27B-FP8",
         "index_path": "/ścieżka/do/router_index.npz",
+        "heuristics_path": "/ścieżka/do/router_l1.json",
+        "heuristic_threshold": "2",
         "k": "20",
         "threshold": "0.3"
       }}'
@@ -39,7 +41,7 @@ curl -X POST "http://localhost:8086/admin/services/router/models/_?model_id=rout
   -H "Authorization: Bearer ADMIN_KEY" -H "Content-Type: application/json" -d '{}'
 ```
 
-Opcjonalne reguły warstwy 1 (domyślnie wyłączone; w pomiarze nie dały zysku): `"force_large_over_chars": "4000"`, `"force_large_keywords": "prove, derive"`.
+Warstwa 1 ma dwie części (obie opcjonalne). **Heurystyki** przyznają punkty: +1 za frazę z listy COMPLEX i −1 za frazę z listy SIMPLE (listy z taksonomii Blooma i AgentBus), +1 powyżej 400 znaków, kolejny +1 powyżej 1500, −1 gdy ponad 10% znaków to cyfry, +1 za adres URL. Tabela punktów i listy fraz są w pliku `data/router_l1.json` (w repozytorium pracy; generuje go `eval/l1_points.py`) i można je edytować. Gdy suma punktów dojdzie do progu `heuristic_threshold` (domyślnie 2), pytanie idzie od razu do dużego modelu, bez embeddingu i bez warstwy 2; poniżej progu decyduje kNN. Bez `heuristics_path` heurystyki są wyłączone. Kalibracja progu (3010 pytań): próg 2 pkt obejmuje 6,4% pytań, wśród nich 51,8% COMPLEX (bazowo 37,4%); próg 3 pkt obejmuje 1,8%, wśród nich 54,7%. **Reguły administratora** (domyślnie wyłączone): `"force_large_over_chars": "4000"`, `"force_large_keywords": "prove, derive"`.
 
 ## 4. Użycie
 
