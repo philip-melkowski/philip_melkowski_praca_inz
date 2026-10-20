@@ -107,7 +107,7 @@ JEŚLI ZAPYTAJĄ
 `MÓW
 • Router ma trzy warstwy, od najtańszej do najdroższej. Warstwa zostaje tylko wtedy, gdy pokaże zysk.
 • Warstwa 1, heurystyki: punkty za cechy tekstu. +1 za frazę z listy zadań trudnych, −1 za frazę z listy łatwych, +1 za długość powyżej 400 znaków, +1 powyżej 1500, −1 gdy ponad 10% znaków to cyfry, +1 za adres internetowy. Administrator może zmienić punkty.
-• Frazy pochodzą z literatury, nie z moich danych, żeby ich nie dopasować do wyników. Taksonomia Blooma (Anderson i Krathwohl, 2001): „analyze”, „compare”, „design” to zadania trudniejsze, „what is”, „define” łatwiejsze. Lista z AgentBus, praktycznego systemu routingu: np. „debug”, „refactor”, „step by step”.
+• Frazy pochodzą z literatury, nie z moich danych, żeby ich nie dopasować do wyników. Taksonomia Blooma (Anderson i Krathwohl, 2001, definicja niżej): „analyze”, „compare”, „design” to zadania trudniejsze, „what is”, „define” łatwiejsze. Lista z AgentBus, praktycznego systemu routingu: np. „debug”, „refactor”, „step by step”.
 • Suma punktów od progu (domyślnie 2) = pytanie idzie od razu do dużego, bez dalszych warstw. Tylko w tę stronę, bo pomyłka w stronę dużego kosztuje pieniądze, a nie jakość. Warstwa jest opcjonalna: bez pliku z parametrami jest wyłączona.
 • U nas próg 2 obejmuje 6% pytań, z których 52% jest naprawdę trudnych (wśród wszystkich 37%). Lepsze od zgadywania, ale obejmuje niewiele ruchu.
 • Warstwa 2: porównanie z podobnymi pytaniami (kNN) na embeddingach. Główna część rozwiązania, następny slajd.
@@ -115,6 +115,11 @@ JEŚLI ZAPYTAJĄ
 • Na końcu router zwraca wynik od 0 do 1: im wyższy, tym bardziej pytanie wygląda na trudne. Administrator ustawia próg: powyżej idzie do dużego, poniżej do małego. Gdy cokolwiek zawiedzie, idzie do dużego, bo to bezpieczniejsze.
 
 DEFINICJE
+TAKSONOMIA BLOOMA: podział celów uczenia na sześć poziomów myślenia, od najprostszego do najtrudniejszego. Używam wersji poprawionej (Anderson i Krathwohl, 2001).
+• Poziomy: zapamiętać (remember), zrozumieć (understand), zastosować (apply), analizować (analyze), oceniać (evaluate), tworzyć (create).
+• Do każdego poziomu pasują czasowniki, którymi zadaje się polecenia. Zapamiętać: „define”, „name”, „recall”, „what is”. Zrozumieć: „summarize”, „translate”, „paraphrase”. Zastosować: „solve”, „calculate”, „implement”. Analizować: „analyze”, „compare”, „contrast”. Oceniać: „evaluate”, „critique”, „justify”. Tworzyć: „design”, „compose”, „invent”.
+• Jak użyłem: czasowniki z czterech wyższych poziomów (zastosować, analizować, oceniać, tworzyć) to lista fraz TRUDNYCH (+1 punkt). Z dwóch niższych (zapamiętać, zrozumieć) to lista fraz ŁATWYCH (−1 punkt). Do listy trudnych doszły frazy z AgentBus, np. „debug”, „refactor”, „step by step”.
+• Założenie z literatury: polecenie, które wymaga wyższego poziomu myślenia, jest trudniejsze. U nas sama warstwa 1 wypada słabo (AUROC ok. 0,55), więc to założenie tylko częściowo pasuje do pary naszych modeli. Prawdopodobnie dlatego, że o trudności dla modelu decyduje też to, czy zna fakt, a tego z czasownika nie widać (hipoteza, niesprawdzona).
 STREFA NIEPEWNOŚCI: wynik warstwy 2 w środku skali, między dwoma progami. Np. poniżej 0,2 do małego, powyżej 0,45 do dużego, pomiędzy decyduje warstwa 3. W naszych danych to ok. połowa pytań.
 • Granice dobiorę na danych do dostrajania tak, by jakość nie spadła poniżej ustalonego poziomu. Tego poziomu jeszcze nie ustaliłem.
 
@@ -156,16 +161,13 @@ JEŚLI ZAPYTAJĄ
 AUROC (ze slajdu 4): odsetek par (trudne, łatwe), w których router dał trudnemu wyższy wynik. Remis = 0,5. 0,5 to losowo, 1,0 to bezbłędny router. Nie zależy od progu.
 • Wynik routera to liczba 0–1 ze slajdu 9: im wyższa, tym bardziej pytanie wygląda na trudne.
 • Przykład pary: trudne dostało 0,70, łatwe 0,40, więc para = 1. U nas ok. 1130 trudnych i 1880 łatwych pytań, czyli ponad 2 miliony par.
-JAKOŚĆ: średnia ocena odpowiedzi w skali 0–1 (dla każdego pytania ocena modelu, do którego poszło). Wszystko do małego 0,625, wszystko do dużego 0,846. Luka 0,221.
-APGR (średni odzyskany zysk): dla jednego progu odzyskany zysk = (jakość routera − 0,625) / 0,221. Np. jakość 0,777 daje 0,152 / 0,221 = 0,69.
-• APGR to średnia z tego po wszystkich progach, czyli jedna liczba opisująca cały router. Wykres na następnym slajdzie.
-• Losowe wysyłanie daje APGR 0,5, idealny router 0,89 (dla 3010 pytań). Mój ma 0,605.
+• AUROC ocenia sam wynik routera, bez wybierania progu. Drugą miarę, APGR, która pokazuje jakość odpowiedzi przy danym udziale dużego modelu, omawiam na następnym slajdzie.
 
 MÓW
 • Mój router ma AUROC 0,682, czyli w 68 parach na 100 ustawia pytania dobrze.
 • Słupki na wykresie to AUROC: losowy 0,5, sama długość pytania 0,525 (prawie nic nie mówi), „samo źródło” 0,631, router 0,682.
 • „Samo źródło”: router, który nie czyta pytania, tylko wie, z jakiego zbioru pochodzi, i daje wynik równy odsetkowi trudnych w tym zbiorze (matematyka 4%, WildChat 48%). W praktyce źródła nie znamy, to tylko poprzeczka.
-• Router wie coś więcej niż rodzaj pytania, ale niewiele: różnica 0,05 w AUROC i 0,023 w APGR (0,605 wobec 0,582), istotna statystycznie.
+• Router wie coś więcej niż rodzaj pytania, ale niewiele: różnica 0,05 w AUROC (0,682 wobec 0,631).
 
 UWAGA
 • Liczby dotyczą warstwy 2 (kNN), bo tylko ona daje wynik 0–1 dla każdego pytania. Warstwa 1 osobno ok. 0,55, w kaskadzie z kNN jakość się nie zmienia. Warstwy 3 jeszcze nie ma. Cały router ocenię na zbiorze testowym.
@@ -176,17 +178,21 @@ JEŚLI ZAPYTAJĄ
 
 // 11
 `MÓW
-• Ten slajd pokazuje dwie różne rzeczy: po lewej wykres (obraz APGR), po prawej tabelę (ryzyko poważnych błędów).
+• Ten slajd pokazuje drugą miarę. Po lewej APGR (wykres), po prawej ryzyko poważnych błędów (tabela). To dwa różne spojrzenia na ten sam router.
+
+DEFINICJE
+JAKOŚĆ: średnia ocena odpowiedzi w skali 0–1 (dla każdego pytania ocena modelu, do którego poszło). Wszystko do małego 0,625, wszystko do dużego 0,846. Luka 0,221.
+APGR (średni odzyskany zysk): dla jednego progu odzyskany zysk = (jakość routera − 0,625) / 0,221. Np. jakość 0,777 daje 0,152 / 0,221 = 0,69.
+• APGR to średnia z tego po wszystkich progach, czyli jedna liczba opisująca cały router.
+• Losowe wysyłanie daje APGR 0,5, idealny router 0,89 (dla 3010 pytań). Mój router ma 0,605, a „samo źródło” 0,582 (różnica 0,023, istotna statystycznie).
+POWAŻNY BŁĄD: pytanie, na które duży model odpowiedziałby wyraźnie lepiej (o ponad 2 punkty w skali 1–5, czyli Δ > 0,5), a które poszło do małego. Takich pytań jest 15,9%.
 
 WYKRES (LEWA STRONA)
-• Oś pozioma: odsetek pytań wysyłanych do dużego modelu (0–100%). Oś pionowa: jakość, czyli średnia ocena odpowiedzi (0–1).
-• Wszystko do małego daje 0,625, wszystko do dużego 0,846. Szara linia to wysyłanie losowe. Pomarańczowa to router: wyżej = lepsza jakość przy tym samym udziale dużego.
+• Oś pozioma: odsetek pytań wysyłanych do dużego modelu (0–100%). Oś pionowa: jakość.
+• Szara linia to wysyłanie losowe. Pomarańczowa to router: wyżej = lepsza jakość przy tym samym udziale dużego.
 • Punkty tej linii to te, z których APGR jest średnią. APGR (0,605 wobec 0,5 losowo) mierzy odstęp między liniami.
 • Przykład, próg 0,3: do dużego idzie 54% pytań, jakość 0,777. Odzyskuję 0,69 luki między 0,625 a 0,846 (losowo byłoby 0,54).
 • To ok. 46% mniej wywołań dużego modelu za ok. 8% niższą jakość (0,846 spada do 0,777). Uwaga: to odczyt z jednego punktu, nie APGR.
-
-DEFINICJE
-POWAŻNY BŁĄD: pytanie, na które duży model odpowiedziałby wyraźnie lepiej (o ponad 2 punkty w skali 1–5, czyli Δ > 0,5), a które poszło do małego. Takich pytań jest 15,9%.
 
 TABELA (PRAWA STRONA)
 • To inna miara niż APGR. Jeśli akceptuję do 12% poważnych błędów wśród pytań wysłanych do małego, do małego idzie 47% pytań.
