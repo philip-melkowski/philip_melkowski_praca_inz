@@ -10,7 +10,7 @@
 | `CELE_PRZED_TESTEM.md` | propozycja celów liczbowych przed otwarciem zbioru test (do zatwierdzenia) |
 | `ROUTER_URUCHOMIENIE.md` | jak zainstalować i uruchomić `router` w DF (komendy, progi, lista kontrolna) |
 | `ROUTER_TESTY_CURL.md` | zestaw żądań curl do pokazania działania routera (z opisem, co sprawdzają, oczekiwanymi i zaobserwowanymi wynikami z testu 2026-10-20) |
-| `prezentacja_postepy.pptx`, `prezentacja_notatki.js` | prezentacja (15 slajdów) z notatkami mówionymi; źródło notatek do przebudowy |
+| `prezentacja_postepy.pptx`, `prezentacja_notatki.js` | prezentacja (16 slajdów) z notatkami mówionymi; źródło notatek do przebudowy |
 | `kontrola_ludzka/` | zadanie oceny 100 odpowiedzi przez człowieka: `zadanie_warstwowe.md` (zalecane; oceny autora), `zadanie_warstwowe_ostateczne.md` (**ostateczne oceny autora**), pliki pośrednie `zadanie_warstwowe_poprawione.md`, `poprawki_ocen.json`, `oceny_claude.json`, `eval/human_rate.py` (narzędzie do oceniania) i `zadanie.md`; **klucze (`klucz*.json`) zawierają oceny sędziego — nie czytać przed oceną** |
 | `stage1/`, `stage2/`, `references/` | wcześniejsze raporty i literatura (część dotyczy starego planu) |
 

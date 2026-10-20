@@ -10,7 +10,7 @@ Najpierw powiem, jaki jest problem i jak zmieniłem podejście do pracy. Potem p
 WARTO WIEDZIEĆ
 Mały model to qwen3:8b, duży to Qwen3.8-27B. Liczby 8 i 27 to miliardy parametrów, czyli rozmiar modelu.
 W całej prezentacji „pytanie trudne” znaczy: duży model odpowiada na nie wyraźnie lepiej niż mały. „Pytanie łatwe” znaczy: mały wystarcza.
-Całość zajmie ok. 20 minut.`,
+Całość zajmie ok. 20–25 minut.`,
 
 // 2
 `MÓW
@@ -247,9 +247,35 @@ Ograniczenia, które nazywam wprost. Jedna para modeli. Jeden sędzia, a zgodno�
 JEŚLI ZAPYTAJĄ
 Czy zadziała na innych modelach? Router tak, ale etykiety trzeba zmierzyć od nowa: ok. 1,5 doby generowania i ok. 8 USD za sędziego.`,
 
-// 15
+// 15 (dodatkowe dane)
 `MÓW
-Co dalej. Po pierwsze, dokończyć test z modelami Qwen 8B i 27B na komputerze służbowym: awaria i restart usługi, a opóźnienie zmierzyć dokładniej, na większej liczbie pomiarów. Po drugie, sprawdzić warstwę 3 (test go/no-go): czy mały model oceniający pytanie poprawia wynik routera, i to tylko w strefie niepewności, czyli tam, gdzie warstwa 2 nie jest pewna. Granice strefy dobiorę tak, żeby jakość nie spadła poniżej ustalonego poziomu, który jeszcze trzeba ustalić. Po trzecie, dodać dane bliższe wdrożeniu, np. własne zapytania, zadania SQL, polecenia biurowe. To wymaga ponownego pomiaru, ale pozwoli też sprawdzić, czy heurystyki warstwy 1 działają lepiej na takich danych. Po czwarte, otworzyć zbiór testowy raz i zrobić ocenę końcową.
+Najsłabsza strona moich danych jest taka, że niewiele przypominają zwykłe użycie w firmie. 63% to publiczne czaty z Areny i WildChat, w dużej części zabawa i fikcja literacka. Reszta to znane testy. Brakuje poleceń biurowych, zadań z bazami danych i prawdziwego kodu pisanego przez programistów. Przez to router słabo wykrywa trudny kod, a heurystyki z warstwy 1 mogły wypaść gorzej, niż wypadną na danych z firmy. To jest hipoteza do sprawdzenia, a nie wynik.
+
+Dlatego po prezentacji chcę dołożyć dane z innych publicznych zbiorów. Pokazuję cztery kandydatki. Licencje sprawdziłem na kartach zbiorów: Dolly ma CC BY-SA 3.0, CodeChat ODC-By, Spider CC BY-SA 4.0, a Arena 140k CC BY 4.0 dla promptów. Dwie z nich, Dolly i Spider, to licencje typu ShareAlike, czyli z warunkiem zachowania tej samej licencji. Opiszę to w pracy. Używam tylko promptów, a odpowiedzi generują moje modele, więc warunki dotyczące odpowiedzi modeli w Arenie mnie nie obejmują. Ostateczny wybór zrobię przed pomiarem.
+
+Pierwsza to Dolly, około 15 tysięcy poleceń napisanych przez pracowników firmy Databricks: streszczanie tekstu, wyciąganie informacji, pytania zamknięte, burza mózgów. To najbliższe temu, o co ktoś mógłby pytać asystenta w firmie. Część poleceń ma dołączone fragmenty Wikipedii, z których usunę numery przypisów.
+
+Druga to CodeChat, około 83 tysięcy prawdziwych rozmów programistów z modelami językowymi, w ponad dwudziestu językach programowania. Dałaby dużo więcej prawdziwego kodu niż dzisiejsze zadania z jednego zbioru, HumanEval. To część zbioru WildChat, który już mam, więc najpierw usunę powtórzenia.
+
+Trzecia to Spider, około 8 tysięcy pytań zadawanych bazom danych po angielsku, do których trzeba napisać zapytanie w języku SQL. SQL to język, którym pyta się bazy danych. To nowy rodzaj zadań, typowy dla firm. Pytania napisało 11 studentów uniwersytetu Yale, więc nie są to zapytania prawdziwych użytkowników. Jest najdroższy w ocenie, bo żeby sprawdzić wynik automatem, trzeba uruchamiać zapytania na bazach.
+
+Czwarta to Arena 140k, około 135 tysięcy prawdziwych rozmów z Areny, na wielu tematach i w wielu językach, ze znacznikiem, które dotyczą kodu. Daje więcej różnych pytań. Część pytań z Areny już mam, więc też sprawdzę powtórzenia.
+
+Co trzeba zrobić z każdym zbiorem: tak jak z poprzednimi, wysłać pytania do obu modeli (mały trzy razy, duży raz), ocenić odpowiedzi sędzią i policzyć różnicę Δ. Dopiero wtedy pytania dostają etykiety. Zbiór testowy zostaje zamknięty, nowe dane trafią tylko do części do nauki i dostrajania. Koszt sędziego to moje oszacowanie: ok. 1 dolar na 500 pytań, na podstawie dotychczasowych ok. 8 dolarów za całość. Płatne wywołania zrobię dopiero za zgodą na konkretną kwotę.
+
+UWAGA
+To jest plan, nic z tego jeszcze nie zrobiłem. Nie wiem, czy nowe dane poprawią router. Wiem tylko, że obecne nie pokazują zwykłego użycia w firmie, więc ich uzupełnienie jest uzasadnione.
+
+JEŚLI ZAPYTAJĄ
+Czy jest zbiór prawdziwych zapytań firmowych? Nie znalazłem go w otwartych zbiorach. Najbliższy jest Dolly, pisany przez pracowników firmy.
+Dlaczego nie Bitext, czyli zbiór pytań do obsługi klienta? Jest syntetyczny i szablonowy, więc pewnie prawie same pytania łatwe i bardzo do siebie podobne. Nic by nie powiedział o prawdziwym ruchu.
+Dlaczego nie LMSYS-Chat-1M? Wymaga zgody na dostęp. Odrzuciłem go wcześniej.
+Dlaczego nie RouterBench, zbiór do badań nad routingiem? Na jego karcie nie ma licencji, a pytania pochodzą ze znanych testów, więc nie dodałby nowych rodzajów pytań.
+A licencje? Sprawdziłem je na kartach zbiorów: Dolly CC BY-SA 3.0, CodeChat ODC-By, Spider CC BY-SA 4.0, Arena 140k CC BY 4.0 dla promptów. Dolly i Spider mają ShareAlike, co opiszę w pracy. Prawnej interpretacji nie robiłem, karty podają same licencje. Nie sprawdziłem oficjalnej strony Spider poza kartą.`,
+
+// 16
+`MÓW
+Co dalej. Po pierwsze, dokończyć test z modelami Qwen 8B i 27B na komputerze służbowym: awaria i restart usługi, a opóźnienie zmierzyć dokładniej, na większej liczbie pomiarów. Po drugie, sprawdzić warstwę 3 (test go/no-go): czy mały model oceniający pytanie poprawia wynik routera, i to tylko w strefie niepewności, czyli tam, gdzie warstwa 2 nie jest pewna. Granice strefy dobiorę tak, żeby jakość nie spadła poniżej ustalonego poziomu, który jeszcze trzeba ustalić. Po trzecie, dodać dane bliższe wdrożeniu, czyli te zbiory, które pokazałem na poprzednim slajdzie: polecenia biurowe, prawdziwy kod i zadania SQL. To wymaga ponownego pomiaru, ale pozwoli też sprawdzić, czy heurystyki warstwy 1 działają lepiej na takich danych. Po czwarte, otworzyć zbiór testowy raz i zrobić ocenę końcową.
 
 Prośba. Proszę o zatwierdzenie celów liczbowych przed otwarciem testu. Po otwarciu nie będę ich zmieniał, a wyniki podam niezależnie od tego, czy cele są spełnione. To zabezpiecza przed dopasowaniem wymagań do wyniku.
 
