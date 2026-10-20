@@ -26,7 +26,7 @@ Metryki wg RouteLLM, liczone offline na zapisanych odpowiedziach: PGR (część 
 | warstwa 1 (reguły) | 0,577 | 0,543 |
 | warstwa 2 (kNN) | **0,682** | **0,605** |
 | warstwa 1 + 2 | 0,676 | 0,603 |
-| oracle | 1,00 | 0,91 |
+| oracle | 1,00 | 0,89 |
 
 kNN istotnie przewyższa samą długość (APGR +0,082, CI [0,064; 0,101]) i samo źródło (+0,023, CI [0,009; 0,038]); reguły nie dodają nic do kNN. Żaden z dziewięciu przetestowanych klasyfikatorów (regresja logistyczna, SVM, MLP, boosting, regresja na Δ, kNN o różnym k) nie jest istotnie lepszy od kNN, więc sufit informacji w embeddingach wynosi ok. 0,68–0,71 AUROC. Szacunek górnej granicy wynikającej z szumu etykiet (zawyżony, bo duży ma jedną próbkę): AUROC ok. 0,9.
 

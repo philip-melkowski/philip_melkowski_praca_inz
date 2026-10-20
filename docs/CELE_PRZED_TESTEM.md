@@ -2,7 +2,7 @@
 
 Status: **propozycja asystenta (2026-10-19), do zatwierdzenia przez autora pracy i promotora.** Zgodnie z `koncepcja.md` cele powstają po pomiarze punktów odniesienia i przed otwarciem testu. Po otwarciu testu nie wolno ich zmieniać; wyniki raportujemy niezależnie od tego, czy cele spełnione.
 
-Punkt wyjścia (walidacja krzyżowa po grupach na train+cal, 3010 pytań, próg Δ > 0,25; zob. `DZIENNIK.md`, wpis 24): kNN na embeddingach AUROC 0,682, APGR 0,605; „samo źródło” 0,631 / 0,582; „sama długość” 0,525 / 0,523; losowy 0,50 / 0,50; oracle APGR 0,91.
+Punkt wyjścia (walidacja krzyżowa po grupach na train+cal, 3010 pytań, próg Δ > 0,25; zob. `DZIENNIK.md`, wpis 24): kNN na embeddingach AUROC 0,682, APGR 0,605; „samo źródło” 0,631 / 0,582; „sama długość” 0,525 / 0,523; losowy 0,50 / 0,50; oracle APGR 0,89 (na samym cal, 859 pytań: 0,91).
 
 | # | Cel (zbiór test, pytania w dziedzinie, tj. bez MMLU, MT-Bench i 150 pytań GSM8K poza dziedziną) | Uzasadnienie |
 |---|---|---|

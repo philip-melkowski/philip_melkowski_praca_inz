@@ -25,7 +25,7 @@ JEŚLI ZAPYTAJĄ
 // 3
 `MÓW
 • Etykiety (pytanie łatwe lub trudne) brałem z gotowych danych: z głosowań w Chatbot Arena (ludzie wybierają lepszą z dwóch odpowiedzi) i z pytań wygenerowanych przez Gemini.
-• Plan miał trzy warstwy (heurystyki, porównanie z podobnymi pytaniami, mały model), konfigurację w YAML, kategorie tematyczne i podział złożonych zadań na części (Map-Reduce).
+• Trzy warstwy (heurystyki, porównanie z podobnymi pytaniami, mały model) zostają, opisuję je na slajdzie 8. Z rdzenia wypadły: konfiguracja w YAML, kategorie tematyczne i podział złożonych zadań na części (Map-Reduce).
 • Odpowiedzi miałem oceniać m.in. miarą ROUGE.
 • Plan był rozsądny, bo RouteLLM uczy się na głosach z Areny. Miał jednak jeden słaby punkt, pokazany na następnym slajdzie.
 
@@ -35,9 +35,9 @@ ROUGE: liczy, ile słów wspólnych ma odpowiedź modelu z odpowiedzią wzorcow�
 
 // 4
 `MÓW
-• Sprawdziłem, czy stare etykiety z Areny pasują do moich dwóch modeli.
+• Zmieniłem podejście: zamiast cudzych etykiet mierzę trudność sam, na swoich modelach. Dla każdego pytania liczę, o ile duży model odpowiedział lepiej niż mały. Tę przewagę oznaczam Δ (delta). Jak ją liczę, pokażę na następnym slajdzie.
+• Najpierw sprawdziłem, czy stare etykiety z Areny pasują do tej zmierzonej przewagi.
 • Stara etykieta: pytanie jest „trudne”, jeśli w głosowaniu wygrał mocniejszy model.
-• Dla moich dwóch modeli zmierzyłem osobno, o ile duży jest lepszy od małego na każdym pytaniu (jak dokładnie, na następnym slajdzie).
 • Porównanie dla 1723 pytań: AUROC = 0,55, czyli prawie rzut monetą (0,5).
 • Dlaczego: Arena porównywała inne modele z innej epoki. Gdy gpt-4 wygrywa ze słabym modelem, to bez względu na pytanie. Stara etykieta mówi więcej o różnicy między modelami niż o trudności pytania.
 • Wniosek: trudność zależy od konkretnej pary modeli, więc mierzę ją sam.
@@ -48,7 +48,7 @@ AUROC: miara zgodności rankingu z prawdą, od 0 do 1.
 • Para = 1, gdy trudne dostało wyższy wynik niż łatwe. 0, gdy niższy. 0,5 przy dokładnie równym wyniku (remis). Żaden próg nie jest potrzebny.
 • AUROC to średnia z takich wyników po wszystkich parach, czyli odsetek par ułożonych dobrze.
 • 0,5 = losowo (50 par na 100 ułożonych dobrze), 1,0 = idealnie (100 na 100). Nasze 0,55 to 55 na 100.
-• Tu „wynik” to zmierzona przewaga dużego modelu, a „trudne” to stare trudne wg Areny. Później w ten sam sposób ocenię router.
+• Tu „wynik” to zmierzona przewaga dużego modelu (Δ), a „trudne” to stare trudne wg Areny. Później w ten sam sposób ocenię router.
 
 UWAGA
 • To analiza, a nie dowód, że moje etykiety są lepsze. Pokazuje tylko, że stare nie pasują do tych modeli.
@@ -84,7 +84,7 @@ JEŚLI ZAPYTAJĄ
 • Źródła: prawdziwe rozmowy (Arena, WildChat), pytania wygenerowane przez Gemini, zbiory z matematyki, wiedzy i programowania. Są pytania otwarte i takie ze znaną poprawną odpowiedzią.
 • Podział: 50% do nauki routera, 20% do dostrajania, 30% do testu końcowego. Test jest zamknięty: otworzę go raz, na końcu.
 • Bardzo podobne pytania trafiają zawsze do jednej części. Inaczej router „znałby” pytania z testu, a wynik byłby zawyżony.
-• Wynik pomiaru: 35,4% pytań jest trudnych, ale zależnie od źródła: matematyka 4%, WildChat 48%. Mały model dobrze liczy, a rozmowy otwarte są dla niego trudniejsze.
+• Wynik pomiaru: 35,4% pytań jest trudnych (liczone dla 4304 pytań z etykietą; 9 z 4313 zablokował sędzia z powodu treści, więc są poza analizą), ale zależnie od źródła: matematyka 4%, WildChat 48%. Mały model dobrze liczy, a rozmowy otwarte są dla niego trudniejsze.
 
 JEŚLI ZAPYTAJĄ
 • Skąd te źródła? Chciałem mieszankę prawdziwych, niejednoznacznych rozmów i zadań, w których poprawność da się sprawdzić automatem.
