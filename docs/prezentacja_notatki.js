@@ -10,7 +10,7 @@ Najpierw powiem, jaki jest problem i jak zmieniłem podejście do pracy. Potem p
 WARTO WIEDZIEĆ
 Mały model to qwen3:8b, duży to Qwen3.8-27B. Liczby 8 i 27 to miliardy parametrów, czyli rozmiar modelu.
 W całej prezentacji „pytanie trudne” znaczy: duży model odpowiada na nie wyraźnie lepiej niż mały. „Pytanie łatwe” znaczy: mały wystarcza.
-Całość zajmie ok. 18–20 minut.`,
+Całość zajmie ok. 20 minut.`,
 
 // 2
 `MÓW
@@ -119,12 +119,14 @@ Gdy suma punktów dojdzie do progu (domyślnie 2), pytanie idzie od razu do duż
 
 Warstwa 2: porównanie z podobnymi pytaniami (metoda kNN) na embeddingach, czyli na liczbowym opisie pytania. To główna część rozwiązania i wyjaśniam ją na następnym slajdzie.
 
-Warstwa 3: mały model sam ocenia, czy pytanie jest trudne. Jeszcze jej nie ma. Wejdzie, jeśli krótki test pokaże zysk. Ten test nazywa się go/no-go: jeśli pomaga, budujemy, jeśli nie, rezygnujemy.
+Warstwa 3: mały model sam ocenia, czy pytanie jest trudne. Jeszcze jej nie ma. Wejdzie, jeśli krótki test pokaże zysk. Ten test nazywa się go/no-go: jeśli pomaga, budujemy, jeśli nie, rezygnujemy. Nie chcę jej wywoływać dla każdego pytania, bo to wywołanie małego modelu i trwa sekundy. Będzie dotyczyć tylko pytań, przy których warstwa 2 jest niepewna. Wyjaśniam to niżej, po omówieniu wyniku routera.
 
 Na końcu router zwraca liczbę od 0 do 1. To jego wynik dla pytania: im wyższy, tym bardziej router uważa pytanie za trudne, czyli tym większa szansa, że duży model odpowie wyraźnie lepiej. Administrator ustawia próg: wynik powyżej idzie do dużego modelu, poniżej do małego. Gdy cokolwiek zawiedzie, pytanie idzie do dużego, bo to bezpieczniejsze.
 
+Teraz warstwa 3. Niepewna znaczy: wynik warstwy 2 jest w środku skali, między dwoma progami, a nie przy jej końcach. Przykład: poniżej 0,2 pytanie idzie do małego, powyżej 0,45 do dużego, a pomiędzy decyduje warstwa 3. W naszych danych to mniej więcej połowa pytań. Pozostałe, tak czy inaczej rozstrzyga sama warstwa 2. Granice dobiorę na danych do dostrajania tak, żeby jakość nie spadła poniżej ustalonego poziomu. Tego poziomu jeszcze nie ustaliłem.
+
 JEŚLI ZAPYTAJĄ
-Ile to trwa? Heurystyki ok. 0,3 ms, a warstwa 2 ok. 20 ms. Warstwa 3 byłaby wywołaniem małego modelu, czyli sekundami, dlatego jest ostatnia.`,
+Ile to trwa? Heurystyki ok. 0,3 ms, a warstwa 2 ok. 20 ms. Warstwa 3 byłaby wywołaniem małego modelu, czyli sekundami, dlatego jest ostatnia i tylko dla pytań w strefie niepewności.`,
 
 // 9
 `MÓW
@@ -214,9 +216,29 @@ Próbki są małe: 42 pytania trudne z TriviaQA i 19 z HumanEval. Wnioski ostro�
 JEŚLI ZAPYTAJĄ
 Czemu zadania z kodu nie są częściej trudne? Mały model rozwiązuje 83% zadań, duży 94%. Różnica jest niewielka.`,
 
-// 13
+// 13 (test na prawdziwych modelach)
 `MÓW
-Implementacja. Usługa RouterService działa w DeepFellow Infra w wersji 0.34. Napisałem 57 nowych testów, a cały zestaw testów (5157) przechodzi. Sprawdziłem ją od początku do końca na osobnej instancji z modelami Gemini: wybór modelu, nagłówki z decyzją, strumieniowanie i przełączenie na duży model przy błędzie (po angielsku fallback). Test wykrył błąd: wycofany model zwracał 404 jako zwykłą odpowiedź i omijał to przełączenie. Naprawiłem. Z modelami Qwen 8B i 27B jeszcze nie uruchamiałem. Zrobię to na komputerze służbowym.
+Do tej pory wszystkie wyniki liczyłem na zapisanych danych. Teraz pokazuję pierwsze uruchomienie całego systemu na prawdziwych modelach: małym qwen3:8b, uruchomionym w programie Ollama, i dużym Qwen 27B, uruchomionym przez vLLM. Oba podłączone przez DeepFellow. Zrobiłem to 20 października na komputerze służbowym i wysłałem do modelu o nazwie router cztery pytania.
+
+Router dopisuje do każdej odpowiedzi trzy nagłówki: który model odpowiedział, która warstwa podjęła decyzję i jaki był wynik kNN, czyli ta liczba od 0 do 1 ze slajdu 9. Dzięki temu decyzję widać bez zaglądania do logów.
+
+Pierwsze pytanie, o stolicę Francji: wynik 0,19, poniżej progu 0,3, więc odpowiada mały model. Drugie, prośba o opowiadanie o smoku i rycerzu: wynik 0,70, powyżej progu, więc odpowiada duży i pisze całe opowiadanie. Trzecie to polecenie „przeanalizuj i porównaj dwa projekty, oceń kompromisy krok po kroku”. Zawiera pięć fraz z listy zadań trudnych, czyli pięć punktów heurystyk przy progu dwóch. Decyduje więc warstwa 1: pytanie idzie od razu do dużego i nawet nie liczę embeddingu, dlatego nie ma wyniku kNN. Przy opowiadaniu heurystyki dały tylko jeden punkt, więc decyzja przeszła do warstwy 2. Czwarte to mnożenie 17 razy 23 wysłane w trybie strumieniowym, czyli odpowiedź przychodzi kawałkami: wynik 0,10, odpowiada mały, a nagłówki z decyzją dochodzą przed pierwszym kawałkiem odpowiedzi.
+
+Potem zmierzyłem, ile czasu dokłada sam router. To samo proste pytanie wysłałem pięć razy przez router i pięć razy bezpośrednio do małego modelu. Średni czas to 0,376 s wobec 0,363 s, czyli router dodaje ok. 13 ms. Cel z planu to mniej niż 50 ms.
+
+Czego jeszcze nie sprawdziłem: przełączenia na duży model, gdy router ulegnie awarii, oraz tego, że po restarcie DeepFellow usługa wraca sama. To zrobię w następnej kolejności.
+
+UWAGA
+Pięć pomiarów to mało, a czasy bezpośrednie wahają się o ok. 27 ms, czyli więcej niż sama różnica. Wniosek brzmi więc: narzut to kilka do kilkunastu milisekund i na pewno poniżej 50, a nie dokładnie 13.
+Cztery pytania pokazują, że mechanizm działa. Nie mówią, jak dobrze router wybiera. Jakość wyboru pokazują wyniki na zbiorze danych z wcześniejszych slajdów.
+
+JEŚLI ZAPYTAJĄ
+Czemu to nie jest to samo co 20,6 ms z następnego slajdu? To dwa różne pomiary: tamten dotyczył samej decyzji routera na moim komputerze, bez DeepFellow, a ten całej drogi przez DeepFellow na komputerze służbowym, jako różnica czasów. Obie liczby są poniżej 50 ms.
+Jak rozumieć wynik 0,19? Jako w przybliżeniu odsetek trudnych pytań wśród 20 podobnych z bazy, z większą wagą dla bardziej podobnych.`,
+
+// 14
+`MÓW
+Implementacja. Usługa RouterService działa w DeepFellow Infra w wersji 0.34. Napisałem 57 nowych testów, a cały zestaw testów (5157) przechodzi. Sprawdziłem ją od początku do końca na osobnej instancji z modelami Gemini: wybór modelu, nagłówki z decyzją, strumieniowanie i przełączenie na duży model przy błędzie (po angielsku fallback). Test wykrył błąd: wycofany model zwracał 404 jako zwykłą odpowiedź i omijał to przełączenie. Naprawiłem. Z modelami Qwen 8B i 27B uruchomiłem ją już na komputerze służbowym i pokazałem to na poprzednim slajdzie. Zostały dwa sprawdzenia: przełączenie na duży model przy awarii i restart usługi.
 
 Sprawdziłem też dwie rzeczy. Czas: mediana 20,6 ms, a 90% zapytań w mniej niż 65 ms (cel poniżej 50 ms spełniony dla mediany). Odporność: po literówkach, parafrazach i zamianie na synonimy decyzja zmienia się tylko w 6–10% pytań. Losowo byłoby 42–48%. Router nie jest więc wrażliwy na drobne zmiany sformułowania.
 
@@ -225,9 +247,9 @@ Ograniczenia, które nazywam wprost. Jedna para modeli. Jeden sędzia, a zgodno�
 JEŚLI ZAPYTAJĄ
 Czy zadziała na innych modelach? Router tak, ale etykiety trzeba zmierzyć od nowa: ok. 1,5 doby generowania i ok. 8 USD za sędziego.`,
 
-// 14
+// 15
 `MÓW
-Co dalej. Po pierwsze, uruchomić system z modelami Qwen 8B i 27B na komputerze służbowym i zmierzyć opóźnienie przez DeepFellow. Po drugie, sprawdzić warstwę 3 (test go/no-go): czy mały model oceniający pytanie poprawia wynik routera. Po trzecie, dodać dane bliższe wdrożeniu, np. własne zapytania, zadania SQL, polecenia biurowe. To wymaga ponownego pomiaru, ale pozwoli też sprawdzić, czy heurystyki warstwy 1 działają lepiej na takich danych. Po czwarte, otworzyć zbiór testowy raz i zrobić ocenę końcową.
+Co dalej. Po pierwsze, dokończyć test z modelami Qwen 8B i 27B na komputerze służbowym: awaria i restart usługi, a opóźnienie zmierzyć dokładniej, na większej liczbie pomiarów. Po drugie, sprawdzić warstwę 3 (test go/no-go): czy mały model oceniający pytanie poprawia wynik routera, i to tylko w strefie niepewności, czyli tam, gdzie warstwa 2 nie jest pewna. Granice strefy dobiorę tak, żeby jakość nie spadła poniżej ustalonego poziomu, który jeszcze trzeba ustalić. Po trzecie, dodać dane bliższe wdrożeniu, np. własne zapytania, zadania SQL, polecenia biurowe. To wymaga ponownego pomiaru, ale pozwoli też sprawdzić, czy heurystyki warstwy 1 działają lepiej na takich danych. Po czwarte, otworzyć zbiór testowy raz i zrobić ocenę końcową.
 
 Prośba. Proszę o zatwierdzenie celów liczbowych przed otwarciem testu. Po otwarciu nie będę ich zmieniał, a wyniki podam niezależnie od tego, czy cele są spełnione. To zabezpiecza przed dopasowaniem wymagań do wyniku.
 
