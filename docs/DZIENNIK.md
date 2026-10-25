@@ -654,3 +654,14 @@ Tylko train, CV po grupach (`eval/layer3_systemone_eval.py`, `eval/layer3_system
 - **„Cal zużyty”** (wyjaśnienie dla autora): po porównaniu kilku modeli na cal i wyborze lepszego jego wynik na cal jest zawyżony szczęściem (efekt wyboru zwycięzcy); cal był też wcześniej użyty przy kNN. Dlatego dalsze porównania i wybór modelu tylko na train (CV po grupach), a niezależną liczbę da jednorazowe otwarcie testu na zamrożonej konfiguracji.
 - **Proponowane kroki:** poczekać na `d1:3b`, `tev1:4b`, `kev`; wybrać jeden model (kandydaci `strands-decider:2b` lub basal: szybsze od `nimble`, otwarte licencje) i ewentualnie skrócić zestaw do 3–4 pytań – decyzje na train; zamrozić konfigurację; zmierzyć czas na GPU (maszyna `df-5070ti`, pomiar na miejscu bez VPN: rozgrzewka, p50/p90/p99 przy 1 żądaniu, zestawy 1/4/8 pytań, długość zapytania, przepustowość przy 4/8 równoległych, `nvidia-smi`; 200–300 pytań z train); basal na CUDA do sprawdzenia (`basal-serve --help`).
 - Commit stanu notatek i skryptów warstwy 3 na prośbę autora (dane w `data/datasets/` poza gitem).
+
+### 104. Wyniki na train: `d1:3b`, `tev1:4b`; kolejka przerwana przy `kev` (2026-10-25)
+- Kolejka z wpisu 101 zatrzymana ok. 20:00 przez Claude Code z powodu krytycznie małej ilości pamięci: `kev` w Ollamie zajmował 15 GB (kontekst 73 728), swap 13 GB z 14 GB. `kev` doszedł do 1557/2151 (odpowiedzi zapisane, wznowienie dociągnie resztę). Model zwolniony (`ollama stop kev`); nie wznawiać bez zgody autora, najlepiej z mniejszym kontekstem.
+- Tylko train, CV po grupach (porównanie z tabelą we wpisie 102):
+
+| model | najlepsze pojedyncze pytanie (z odwróceniem) | LR na cechach | kNN + model, zysk (cały train) | zysk w strefie 0,20–0,45 | p50 czasu |
+|---|---|---|---|---|---|
+| `d1:3b` (Liquid AI, LFM2) | long_answer 0,671; small_model_enough 0,651 | 0,695 | +0,026 [0,008; 0,044], APGR +0,014 | +0,087 [0,050; 0,128], APGR +0,060 | 0,8 s |
+| `tev1:4b` (Together AI) | small_model_enough 0,669 | 0,694 | +0,033 [0,015; 0,050], APGR +0,018 | +0,093 [0,054; 0,131], APGR +0,058 | 2,1 s |
+
+- Wniosek (ocena asystenta): `d1:3b` dorównuje `nimble` (LR 0,695) przy p50 0,8 s, najszybszy z działających; `tev1:4b` ma największy zysk z kNN, ale przedziały wszystkich modeli mocno się nakładają. Wszystkie działające modele dają podobny obraz (zysk w strefie ok. +0,08–0,09), więc sygnał jest cechą zadania, nie konkretnego modelu. Korelacja z kNN: `d1` 0,58, `tev1` 0,53.
