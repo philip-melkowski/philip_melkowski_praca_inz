@@ -500,3 +500,157 @@ Zasady, których przestrzegam: zbiór test jest zamknięty (nie używam go do ni
 - Autor: na komputerze służbowym katalog `inz/` zawiera osobno `deepfellow-infra/` i `philip_melkowski_praca_inz/` (repozytorium pracy), więc do notatki dodano sekcję 0 z układem katalogów; ścieżki z `CLAUDE.md` (`../koncepcja.md`, `../kod/deepfellow-infra`) tam nie działają, a `koncepcja.md` nie jest w gitcie (w repo tylko `archiwum/v1/koncepcja.md`). `CLAUDE.md` nie zmieniano.
 - W trakcie ustalono (sprawdzone w API Hugging Face): `pplx-decider` to `perplexity-ai/pplx-decider-v1.2` (27B, baza Qwen3.8-27B, Apache-2.0; jest też `pplx-decider-flash-v1.2`, ok. 4,5B); która wersja stoi za tagiem `latest` w Ollamie, nie potwierdzono.
 - Niezacommitowane (razem z wpisami 79–81 i `WARSTWA3_propozycja.md`).
+
+### 82. Start na komputerze służbowym: rozpoznanie środowiska (2026-10-24)
+- Repozytorium było na `main` (bez wpisów 79–81); przełączono na `stage/2-classifier` (zgodny z `origin`), przeczytano `START_KOMPUTER_SLUZBOWY.md`, `WARSTWA3_propozycja.md` i dziennik 79–81.
+- Stan komputera: Apple M5, 16 GB RAM; Ollama 0.40.5 (endpoint `/v1/systemone` odpowiada; dla `qwen3:8b` zwraca błąd „is not a llama.cpp decision model”, czyli działa tylko z modelami decyzyjnymi). Pobrane: `qwen3:8b` i modele embeddingów (w tym `nomic-embed-text`); **`nimble` nie jest pobrany**, `Qwen/Qwen3.8-27B-FP8` nie działa lokalnie (16 GB nie wystarczy), DeepFellow lokalnie nie działa.
+- Brak `data/datasets/` (pytania, etykiety, embeddingi); w repo jest tylko indeks `data/router/router_index_train_cal.npz` (bez treści pytań). Niczego nie uruchomiono ani nie pobrano; czekam na odpowiedzi autora (dane, dostęp do 27B, zgoda na pobranie `nimble`).
+
+### 83. Dane i dostęp do Qwen 27B na komputerze służbowym (2026-10-24)
+- Dane od autora (`~/Downloads/data/datasets/`) skopiowano do `data/datasets/` (w `.gitignore`): 4313 pytań (train 2157, cal 862, test 1294), 4304 etykiety, embeddingi 4313×768. Zgodne z wcześniejszymi liczbami.
+- Duży model: DeepFellow `https://df.test.simplito.com/` (przez VPN), klucz w `API_KEY` w `~/.zshrc` autora (powłoka asystenta nie jest interaktywna, więc wczytuje go `eval "$(grep '^export API_KEY=' ~/.zshrc)"`). `Qwen/Qwen3.8-27B-FP8` jest na liście modeli i odpowiada (vLLM 0.32.0, model rozumujący: przy małym `max_tokens` treść jest tylko w polu `reasoning`). `qwen3:8b` na tym serwerze nie ma; jest w lokalnej Ollamie.
+- `nimble`: za zgodą autora pobierany do lokalnej Ollamy (jest też na zdalnej maszynie, adres nieznany).
+
+### 84. `nimble` lokalnie: endpoint `/v1/systemone` działa (2026-10-24)
+- `ollama pull nimble` (9,3 GB) zakończony. Pierwsze wywołanie ok. 27 s (ładowanie modelu), potem ok. 0,6–0,9 s na żądanie z 2 pytaniami `noul` (M5, 16 GB).
+- Format odpowiedzi w Ollamie 0.40.5 inny niż w notatce startowej: `answers.<nazwa> = {"type": "noul", "noul": P(true)}`, bez pól `probabilities` i `confidence`. Skrypt musi to obsłużyć.
+- Sprawdzenie na dwóch pytaniach (tylko czy działa, nie wynik): „stolica Francji” → rzadka wiedza 0,003, wieloetapowe 0,004; „dowód 5-kolorowalności grafu planarnego + algorytm O(n)” → 0,90 i 0,97.
+
+### 85. `/v1/systemone` przez lokalny DeepFellow (2026-10-24)
+- Autor chce wołać model decyzyjny przez DF, nie bezpośrednio przez Ollamę. Gałąź DF z endpointem `systemone` jest w wewnętrznym GitLabie (nie w forku ani w publicznym `simplito/deepfellow-infra`).
+- Zdalne maszyny: `df-5070ti-02:8086` (przykład autora) nie odpowiada (autor nie łączy się też przez SSH, prawdopodobnie leży); `df-5070ti-04:8086` to inny DF bez `systemone` (405) i z innym kluczem.
+- Autor uruchomił lokalnie DF z gałęzi z GitLaba na `localhost:8086`, z zewnętrzną Ollamą i `nimble`. Sprawdzone: `POST /v1/systemone` → 200 przy kluczu `API_KEY` (dosłownie, konfiguracja deweloperska); klucz z `df.test` daje 401. Format odpowiedzi taki sam jak w Ollamie (`answers.<nazwa>.noul`).
+
+### 86. Warstwa 3, krok 1: sam `nimble` na train, skrypty i uruchomienie (2026-10-24)
+- Pytanie autora: po co zamrażać zestaw pytań przed pierwszym uruchomieniem, skoro można się nim pobawić. Ustalenie: wybór najlepszego z wielu zestawów na tych samych danych zawyża wynik (dopasowanie do przypadku), więc eksperymentujemy na **train**, a zestaw zamrażamy dopiero przed jednorazowym sprawdzeniem na **cal**. Zbiór `test` nadal zamknięty. Notatka startowa („zamrozić przed uruchomieniem”) była sformułowana za ostro.
+- Decyzja autora: najpierw sama warstwa 3 (`nimble`), dopiero potem połączenie z kNN i heurystykami. Plan: (1) sam nimble na train, AUROC każdego pytania i wszystkich razem (LR, CV po grupach), kNN tylko jako odniesienie; (2) wybór i zamrożenie zestawu; (3) raz na cal: sam nimble, nimble + kNN (+ heurystyki), zysk ponad kNN, wariant ze strefą niepewności.
+- Zestaw v1 (propozycja asystenta, przyjęta jako pierwsza wersja do eksperymentów): `eval/layer3_questions/v1.json`, 8 pytań `noul`: `rare_knowledge`, `multistep`, `code`, `long_answer`, `single_correct`, `open_ended`, `constraints`, `small_model_enough`.
+- Skrypty: `eval/layer3_systemone.py` (zbieranie odpowiedzi przez `POST /v1/systemone`, parametry `--url` domyślnie lokalny DF `http://localhost:8086`, `--model`, `--questions`, wznawianie; wynik `data/datasets/layer3_systemone_<model>_<zestaw>.jsonl`) i `eval/layer3_systemone_eval.py` (krok 1). Ocena sprawdzona na sztucznych losowych odpowiedziach: AUROC pytań ok. 0,5, kNN 0,687 (zgodnie z dotychczasowymi wynikami). Uwaga z tego sprawdzenia: przy 8 pytaniach jedno losowe (`long_answer`) miało przedział 0,445–0,492, czyli „istotne” przez przypadek; przy wyborze pytań to trzeba brać pod uwagę.
+- Próba na 20 losowych pytaniach z train: 0 błędów, wszystkie 8 odpowiedzi ze zróżnicowanymi wartościami (wyników względem etykiet nie liczono). Pełny przebieg na train (2151 pytań z etykietami) uruchomiony. Czas ok. 6–9 s na żądanie przy 2 równoległych: Mac ma 16 GB RAM, a `nimble` zajmuje w Ollamie 17 GB (kontekst 8192), swap 22 GB, więc szacunkowo ok. 2–2,5 h.
+
+### 87. Przebieg na train przerwany z braku pamięci (2026-10-24, ok. 16:45)
+- Claude Code zatrzymał przebieg w tle, bo system miał krytycznie mało pamięci (16 GB RAM, `nimble` 17 GB, swap ok. 19–22 GB). To nie błąd skryptu.
+- Zapisane: 1262 z 2151 odpowiedzi (59%), plik poprawny (wszystkie linie to pełny JSON). Pytania szły w kolejności pliku, nie losowo, więc te 1262 nie są losową próbką train (mogą przeważać niektóre źródła).
+- Nie wznowiono bez zgody autora. Wznowienie tym samym poleceniem dociągnie tylko brakujące 889.
+
+### 88. Ollama z `OLLAMA_NUM_PARALLEL=1`, wznowienie przebiegu na train (2026-10-24)
+- Na prośbę autora: `launchctl setenv OLLAMA_NUM_PARALLEL 1` + `brew services restart ollama` (Ollama działa jako usługa Homebrew; ustawienie obowiązuje do restartu komputera). `nimble` zajmuje teraz 9,6 GB zamiast 17 GB (wcześniej Ollama rezerwowała KV cache na kilka równoległych żądań), swap spadł z ok. 19 GB do ok. 5 GB. DF (`localhost:8086`) działa bez zmian, ta sama odpowiedź na zapytanie testowe (0,907).
+- Wznowiono `eval/layer3_systemone.py --splits train --concurrency 1` od 1262/2151 (17:39).
+- Przerwano na prośbę autora (zamknięcie laptopa) przy 1284/2151; plik poprawny. Wznowić tym samym poleceniem (`--concurrency 1`).
+- Wznowiono od 1284/2151 po przerwie autora. Przed wznowieniem `nimble` znów zajmował 17 GB (swap ok. 13 GB) mimo `OLLAMA_NUM_PARALLEL=1`: runner MLX z czasem rośnie (prawdopodobnie pamięć podręczna MLX); restart Ollamy przywraca 9,6 GB. Przy dalszych przebiegach restartować Ollamę przed startem i patrzeć na swap.
+
+### 89. Warstwa 3, krok 1: wyniki samego `nimble` na train, zestaw v1 (2026-10-24)
+- Przebieg zakończony: 2151/2151 pytań z train, 0 błędów (`data/datasets/layer3_systemone_nimble_v1.jsonl`). Czas żądania p50 8,85 s, p90 10,6 s na M5 16 GB ze swapem; nie jest to miara dla docelowego sprzętu.
+- Wynik `eval/layer3_systemone_eval.py` (CV po grupach, 5 części, bootstrap 1000; COMPLEX 38,7%). AUROC pojedynczych pytań (poniżej 0,5 = wyższe P oznacza łatwiejsze): `small_model_enough` 0,317 [0,295; 0,339] (czyli 0,683 po odwróceniu), `long_answer` 0,666, `open_ended` 0,653, `single_correct` 0,397 (0,603 po odwróceniu), `constraints` 0,579, `rare_knowledge` 0,573, `multistep` 0,543, `code` 0,499 (brak sygnału).
+- Wszystkie 8 razem (LR, CV): AUROC 0,695 [0,674; 0,717], APGR 0,608. Odniesienie kNN k=20 na tych samych pytaniach: AUROC 0,687, APGR 0,606. Sam `nimble` jest więc na poziomie kNN; samo pytanie „czy mały model wystarczy” daje prawie tyle co kNN.
+- Uwaga asystenta (do sprawdzenia, nie wniosek): najsilniejsze cechy (`long_answer`, `open_ended`, `single_correct`) mogą w dużej części odtwarzać typ pytania (otwarte, oceniane przez sędziego, a pytania z poprawną odpowiedzią), który kNN też już widzi. Nie wiadomo jeszcze, ile `nimble` dodaje ponad kNN; to krok 3 (na cal), a na train można wcześniej sprawdzić korelację z kNN i porównanie z bazą „samo źródło”.
+
+### 90. Warstwa 3 na train: czy `nimble` mówi coś ponad kNN i ponad źródło (2026-10-24)
+- Nowy skrypt `eval/layer3_systemone_vs_knn.py` (train, CV po grupach 5 części; kNN dla części uczącej liczony wewnętrzną CV, żeby LR nie uczyła się na wynikach kNN z przeciekiem; „samo źródło” = odsetek COMPLEX w źródle pytania, tylko jako kontrola, router źródła nie zna; bootstrap 1000).
+- Korelacja Spearmana z wynikiem kNN: LR z 8 cech `nimble` +0,60; najsilniej `small_model_enough` −0,57, `open_ended` +0,54, `long_answer` +0,44, `single_correct` −0,43; słabo `rare_knowledge` +0,18, `code` −0,09, `multistep` −0,05. Czyli `nimble` w dużej części powtarza to, co widzi kNN, ale nie całkiem.
+- Wszystkie pytania (2151): kNN AUROC 0,686, kNN + nimble 0,710; zysk **+0,024 [+0,006; +0,041]**, APGR +0,012 [+0,001; +0,023]. Sam `small_model_enough` dodaje +0,018 [+0,001; +0,033]. Ponad kNN + źródło nimble dodaje +0,017 [+0,002; +0,031]; ponad samo źródło +0,089, więc to nie jest tylko rozpoznawanie typu pytania.
+- Strefa niepewności kNN 0,20–0,45 (1097 pytań, 51%): kNN AUROC 0,568, sam nimble 0,647, kNN + nimble 0,649; zysk **+0,081 [+0,042; +0,116]**, APGR +0,052 [+0,026; +0,079].
+- Ocena asystenta: na train sygnał ponad kNN jest, mały na całości i wyraźny w strefie niepewności, co pasuje do architektury z wpisu 67 (nimble tylko w strefie). To wynik eksploracyjny na train (zestaw v1 nie był dobierany na tych danych, ale granice strefy i kształt modelu tak); rozstrzyga jednorazowy pomiar na cal po zamrożeniu zestawu. Nie zmieniano zestawu ani planu.
+
+### 91. Zamrożenie zestawu v1 i protokół jednorazowego pomiaru na cal (2026-10-24, przed uruchomieniem)
+- Decyzja autora: wariant (a), czyli zamrozić v1 bez dalszych zmian i sprawdzić raz na cal. Polecenie autora: „spisuj wszystko zawsze”.
+- **Zamrożony zestaw:** `eval/layer3_questions/v1.json`, SHA-256 `cd0a28c303dcc54dfcc39aede4ed2e15e0614f5cf9956179972220663068899d` (8 pytań `noul`, bez zmian od wpisu 86). Model `nimble` (lokalny DF `localhost:8086` → Ollama 0.40.5, `OLLAMA_NUM_PARALLEL=1`).
+- **Dane:** cal, 859 pytań z etykietami. Zbiór test nie jest używany.
+- **Protokół (ustalony przed obejrzeniem odpowiedzi na cal):**
+  - Wszystko, co się uczy, dopasowane tylko na train (2151): indeks kNN (k=20) = pytania train; regresja logistyczna dopasowana na train z wynikiem kNN poza próbką (CV po grupach) i 8 cechami `nimble` (logity), C=1,0. Zastosowana bez zmian do cal.
+  - Strefa niepewności: wynik kNN na cal w przedziale 0,20–0,45 (jak wpis 67, bez zmian).
+  - **Miara główna (G1):** zysk AUROC „kNN + nimble” względem „sam kNN” na pytaniach cal ze strefy, przedział 95% z bootstrapu 1000 (ziarno 42). **Go dla G1:** dolna granica > 0. **No-go:** przedział obejmuje 0 lub zysk ujemny.
+  - Miary dodatkowe (raportowane, nie zmieniają decyzji G1): to samo na wszystkich pytaniach cal; APGR; AUROC samego nimble i samego `small_model_enough`; odsetek pytań w strefie (G4); czas żądania p50/p90 (G5, ale na tym Macu niemiarodajny); router ze strefą (kNN poza strefą, kNN + nimble w strefie) wobec samego kNN: AUROC i APGR na całym cal; odsetek poważnych błędów (Δ > 0,5 wysłanych do małego) przy tym samym udziale dużego modelu co kNN z progiem 0,3 (G3).
+  - Wynik na cal nie będzie użyty do zmiany zestawu, progów ani strefy; jeśli G1 nie przejdzie, to jest wynik (no-go dla v1).
+
+### 92. Uruchomienie pomiaru na cal (2026-10-24, 19:27)
+- Restart Ollamy przed startem (`nimble` 9,6 GB, swap ok. 5,5 GB, `OLLAMA_NUM_PARALLEL=1`), DF odpowiada (200). Uruchomiono `eval/layer3_systemone.py --splits cal --concurrency 1 --output data/datasets/layer3_systemone_nimble_v1_cal.jsonl` (859 pytań). Odpowiedzi na cal zapisywane do osobnego pliku, żeby nie mieszać ich z train.
+- Skrypt oceny `eval/layer3_systemone_cal.py` napisany według protokołu z wpisu 91 w trakcie przebiegu, przed obejrzeniem odpowiedzi na cal. Sprawdzony na sztucznym pliku cal z losowymi odpowiedziami (prawdziwych odpowiedzi nie podglądano): działa; kNN na cal AUROC 0,691, strefa 48,2% pytań (414), udział dużego przy progu 0,3 = 58,6%. Z losowymi cechami „kNN + nimble” wychodzi gorzej niż sam kNN (LR uczona na prawdziwych cechach z train dostaje szum), czyli skrypt nie daje zysku „z niczego”.
+
+### 93. Wynik jednorazowego pomiaru na cal: `nimble`, zestaw v1 (2026-10-24, 20:22)
+- Przebieg na cal: 859/859, 0 błędów (`data/datasets/layer3_systemone_nimble_v1_cal.jsonl`); zestaw v1 niezmieniony (SHA-256 jak we wpisie 91). Ocena `eval/layer3_systemone_cal.py` według protokołu z wpisu 91, uruchomiona raz; wynik przepisany niżej bez zmian.
+- Cal: COMPLEX 34,3%; w strefie 0,20–0,45: 414 pytań (48,2%, G4). Czas żądania p50 3,70 s, p90 4,27 s (Mac 16 GB, niemiarodajne dla G5).
+- **Strefa (miara główna G1), 414 pytań:** kNN AUROC 0,586 [0,525; 0,647]; sam nimble 0,649; `small_model_enough` 0,632; kNN + small_model_enough 0,640; kNN + nimble 0,653 [0,596; 0,707]. **Zysk AUROC kNN + nimble − kNN: +0,066 [+0,007; +0,126] → GO dla G1** (dolna granica > 0, ale blisko zera). Zysk APGR w strefie +0,044 [+0,002; +0,090].
+- **Cały cal (dodatkowo), 859 pytań:** kNN 0,690; sam nimble 0,705; kNN + nimble (dla wszystkich pytań) 0,723, zysk +0,033 [+0,009; +0,057], APGR +0,018 [+0,000; +0,035]; **router ze strefą** (nimble tylko w strefie) 0,703, zysk +0,013 [−0,005; +0,028], APGR +0,009 [−0,004; +0,022], czyli na całości bez istotnej poprawy.
+- **G3** (Δ > 0,5 wysłane do małego, przy udziale dużego 58,6% jak kNN z progiem 0,3): kNN 3,7% pytań, router ze strefą 3,4%; różnica −0,3 pkt [−1,3; +0,6], czyli nie gorzej (punktowo lepiej, nieistotnie).
+- Ocena asystenta według reguły z `WARSTWA3_propozycja.md` (go = G1 oraz G2 lub G3): **formalnie GO**, ale słabe. (1) Dolna granica G1 to +0,007, tuż nad zerem; proponowany w propozycji przykładowy próg „≥ +0,03” spełnia tylko średnia. (2) Zysk w strefie nie przekłada się istotnie na cały router ze strefą (+0,013, przedział obejmuje 0); nimble dla wszystkich pytań daje więcej (+0,033), ale kosztuje wywołanie dla każdego pytania. (3) G5 (czas na docelowym GPU), G6 (kalibracja) i G7 (stabilność) niezmierzone. Cal został teraz „zużyty” dla v1: dalsze zmiany zestawu wymagałyby nowego niezależnego sprawdzenia (test tylko raz, na końcu). Decyzja go/no-go należy do autora.
+
+### 94. Podsumowanie testu `nimble` w osobnym dokumencie (2026-10-24)
+- Na prośbę autora („obszerny md z opisem tego, co wyszło o tym modelu”) dodano `docs/WARSTWA3_nimble_wyniki.md`: model i endpoint, sprzęt i problemy z pamięcią, zestaw v1, protokół, wszystkie wyniki z train (wpisy 89–90) i cal (wpis 93) w tabelach, zestawienie celów G1–G8, interpretacja i zastrzeżenia, możliwe dalsze kroki, pliki i polecenia do odtworzenia. Liczby przepisane z wyjść skryptów, bez nowych obliczeń. Decyzja go/no-go nadal należy do autora. Niezacommitowane.
+
+### 95. Drugi model decyzyjny: basal-2.0-4.5B przez `basal-serve` na Macu (2026-10-25)
+- Pytanie autora: czy mały basal z jego serwerem zmieści się na Macu; jeśli tak, zainstalować i przetestować. Według API Hugging Face (autor Remek) dostępne są m.in. rodziny basal-1.x, basal-2.0 (mini 1,5B / 4.5B / max 11B, oparte na Bieliku v3, polski i angielski) oraz basal-omni (pico, mini, max, ultra); wszystkie Apache-2.0. Wersje MLX 8-bit: basal-2.0-mini 1,8 GB, **basal-2.0-4.5B 5,2 GB**, basal-2.0-max 12,1 GB. Wybrano 4.5B: mieści się z zapasem, a jest większy niż mini. Karta podaje dla tej wersji 278 ms p50 na M4 Pro 24 GB i kalibrację `CALIBRATION.mlx.json` (ECE 0,0245 na danych odłożonych).
+- Instalacja (poza repozytorium): `uv venv --python 3.12 ~/inz/basal-mlx`, `uv pip install "basal[mlx] @ https://github.com/rkinas/basal/archive/refs/tags/v2.4.1.tar.gz"` (karta podaje v2.0.0; użyto najnowszego v2.4.1). Serwer: `~/inz/basal-mlx/bin/basal-serve --model Remek/basal-2.0-4.5B-MLX-8bit --mode mlx --port 8000` (start 163 s z pobieraniem). Przed startem `ollama stop nimble`, żeby zwolnić pamięć.
+- Sprawdzenie: `POST localhost:8000/v1/systemone` działa, ten sam format co Ollama/DF (`answers.<nazwa>.noul`), dodatkowo `probabilities`, `confidence` i `usage.latency_ms`; pole `model` w żądaniu jest ignorowane, więc `eval/layer3_systemone.py` działa bez zmian (`--url http://localhost:8000`). Czas po rozgrzaniu ok. 0,19 s na 1 pytanie. Przykład: „stolica Francji” rzadka wiedza 0,07; „dowód 5-kolorowalności” 0,64.
+- Uwaga: to nie przez DF (DF nie ma integracji z `basal-serve`), tylko bezpośrednio.
+- **Protokół (przed uruchomieniem):** identyczny jak dla `nimble` (wpis 91), bez żadnych zmian: ten sam zamrożony zestaw v1 (SHA-256 `cd0a28c3…`), train (2151) do uczenia regresji, cal (859) do jednorazowego pomiaru, te same skrypty (`layer3_systemone_eval.py`, `layer3_systemone_vs_knn.py`, `layer3_systemone_cal.py` z `--train`/`--cal` wskazującymi pliki basal), ta sama strefa 0,20–0,45, ten sam G1. Porównanie modeli na tym samym cal: raportujemy wyniki **obu** modeli; wybór lepszego na podstawie cal byłby lekko zawyżony, co trzeba zaznaczyć w pracy.
+- Próba: 20 pytań przy 4 równoległych: 0 błędów, 29 s (ok. 1,5 s/pytanie); 10 pytań pojedynczo: p50 1,39 s, max 2,0 s na żądanie z 8 pytaniami (nimble na tym Macu: 2,5–9 s). Równoległość nie zwiększa przepustowości. Uruchomiono (14:04) train, a po nim cal, `--concurrency 2`; wyniki: `data/datasets/layer3_systemone_basal-2.0-4.5B-MLX-8bit_v1.jsonl` i `..._v1_cal.jsonl`.
+- 14:07: na prośbę autora (odchodzi na ok. godzinę: „poczytaj o basalach, czy da się je fine-tunować; zapuść agentów, obszerny research, sposoby użycia w pracy; przeanalizuj pracę i jej kierunek”) uruchomiono trzech agentów badawczych: (1) rodzina basal, fine-tuning, kalibracja, funkcje silnika; (2) literatura o routingu przed generacją, kaskadach i wykrywaniu braku wiedzy (2024–2026); (3) analiza całej pracy i jej kierunku (tylko odczyt). Wyniki zostaną podsumowane w osobnym wpisie.
+
+### 96. Wyniki agentów badawczych i poprawka dokumentu wyników (2026-10-25)
+- Trzy raporty agentów (basal i fine-tuning; literatura o routingu; analiza całej pracy) są podsumowane w `docs/PRZEMYSLENIA_2026-10-25.md`.
+- Poprawka po przeglądzie (zarzut agenta analizy sprawdzony w dzienniku i potwierdzony): w `docs/WARSTWA3_nimble_wyniki.md` zdanie „cal, na którym niczego nie stroiliśmy” było za mocne. Cal był ewaluacją kNN (wpisy 19–20, 23) i częścią CV przy wyborze konfiguracji kNN, a strefa 0,20–0,45 pochodzi z kwantyli train+cal (wpis 67). Zmieniono na „nie dobieraliśmy niczego z warstwy 3” i dodano zastrzeżenie 8: w strefie kNN ma z konstrukcji wąski zakres wyników (AUROC 0,586), więc G1 sprzyja nowej cesze. Dla architektury rozstrzyga cały router ze strefą (+0,013, nieistotne) i G3. Błąd sformułowania był asystenta.
+- 14:19: na prośbę autora („możesz jeszcze poszukać, deep dive”) uruchomiono pięciu kolejnych agentów (tylko odczyt i sieć): (1) sondy na stanach ukrytych / aktywacjach prefill małego modelu i wykonalność na Macu; (2) kaskady i sygnały po generacji, w tym analiza z istniejących 3 próbek małego modelu; (3) przewidywanie trudności zero-shot i „router bez etykiet”; (4) szum etykiet, sufit AUROC, protokół testu końcowego i progi konformalne; (5) routery produkcyjne i plan benchmarku systemowego, przegląd kodu `RouterService`.
+
+### 97. Sprawdzenie dwóch błędów w kodzie ewaluacji zgłoszonych przez agentów (2026-10-25)
+- **Bootstrap po pytaniach, nie po grupach** (potwierdzone): wszystkie skrypty `eval/` (m.in. `router_cv.py:56`, `layer3_systemone_cal.py:93`) losują pojedyncze pytania, choć CV jest po grupach prawie-duplikatów, więc przedziały mogą być za wąskie. Sprawdzono wpływ na wynik `nimble` na cal (skrypt w scratchpadzie, 2000 losowań): cal ma 859 pytań w 819 grupach (34 grupy > 1, maks. 4), więc różnica jest pomijalna: G1 +0,067 [+0,009; +0,127] po pytaniach wobec +0,068 [+0,007; +0,129] po grupach; router ze strefą +0,013 [−0,004; +0,031] w obu; nimble wszędzie +0,033 [+0,010; +0,057] w obu. Werdykt z wpisu 93 się nie zmienia. Przy CV na train+cal (większe grupy, np. 114 grup WildChat) wpływ może być większy; do poprawy przed testem końcowym (propozycja: bootstrap po grupach we wszystkich skryptach). Niczego jeszcze nie zmieniono w skryptach.
+- **`pick()` w `eval/certified_threshold.py:28-35`** (potwierdzone): wybiera największe n spełniające warunek górnej granicy, zamiast przechodzić od najmniejszego n i zatrzymać się na pierwszym niespełnieniu (Learn-then-Test). Wynik może być lekko antykonserwatywny. Do poprawy; niczego nie zmieniono.
+
+### 98. Kolejne modele: plan i zasady (2026-10-25, przed uruchomieniem)
+- Zgoda autora: „możesz testować inne modele, cokolwiek się tu zmieści, instalować na Ollamie czy jak chcesz”.
+- **Zasada (propozycja asystenta, przyjęta w ramach tej zgody):** cal był już użyty dla `nimble` i basal-4.5B, więc **kolejne modele oceniane tylko na train** (CV po grupach, `eval/layer3_systemone_vs_knn.py`), bez cal; wszystkie wyniki raportowane razem. Zestaw pytań dla modeli decyzyjnych: ten sam zamrożony v1.
+- **Wariant A (bez dodatkowego modelu): `qwen3:8b` sam ocenia pytanie.** Skrypt `eval/layer3_selfassess.py` (natywne `/api/chat` Ollamy, `think: false`, 1 token, `top_logprobs` 10; `/v1/completions` Ollamy nie zwraca logprobs). Dwa prompty zamrożone przed pierwszym pełnym przebiegiem: `self_simple` (prompt SIMPLE/COMPLEX z `layer3_probe.py`; P = SIM/(SIM+COM) z pierwszego tokenu) oraz `self_can_answer` („Do not answer it. Decide whether you, yourself, can answer it fully and correctly. YES or NO”; styl P(IK) z literatury). Próba na 10 pytaniach: 0 błędów, prawdopodobieństwa bardzo skrajne (do 1e-11; logity są przycinane w ocenie do 1e-4).
+- **Modele decyzyjne z Ollamy** (biblioteka ollama.com, kategoria „decision”): pobrane `strands-decider:2b` (Strands Agents, Apache-2.0, 2 GB), `tev1:4b` (Together AI, MIT, 4,4 GB); w trakcie pobierania `laya` (Convai, ModernBERT-large, Apache-2.0, 0,8 GB), `d1:3b` (Liquid AI, LFM2, licencja LFM), `kev` (Jared Palmer). `d3` (decyzyjne modele vLLM Semantic Router) wymaga Ollamy ≥ 0.40.9 (jest 0.40.5) – nie pobrano. Większe (`clef-flash` 11 GB, `nimble-v3` 9,3 GB, CC BY-NC wg agenta) na razie pominięte.
+- **Incydent:** próbny przebieg `qwen3:8b` (5,6 GB w Ollamie) równolegle z `basal-serve` wyczerpał pamięć GPU: 40 żądań basal dostało 503 („[METAL] Insufficient Memory”). Odpowiedzi z błędem nie są zapisywane; zostaną dociągnięte ponownym uruchomieniem. Po `ollama stop qwen3:8b` błędy ustały. Zasada: na tym Macu tylko jeden model naraz.
+- Kolejność: dokończyć basal (train, brakujące 40, cal), potem `qwen3:8b` samoocena na train, potem modele decyzyjne z Ollamy na train, każdy osobno.
+- Wyniki drugiej rundy agentów (zero-shot/zimny start, kaskady, sondy na stanach ukrytych, szum etykiet i protokół testu, routery produkcyjne i benchmark) dopisane do `docs/PRZEMYSLENIA_2026-10-25.md`, sekcja 10.
+
+### 99. Krzywa uczenia na train: ile etykiet potrzebuje kNN, żeby dogonić `nimble` zero-shot (2026-10-25)
+- Skrypt `eval/layer3_learning_curve.py` (tylko train, bez cal i testu; 100 powtórzeń: 30% grup odłożone do oceny, k etykiet losowane z reszty). Zero-shot = samo `small_model_enough` z `nimble` (odwrócony kierunek, 0 etykiet). To pytanie było w zestawie v1 od początku jako bezpośrednie pytanie o trudność (wpis 86), nie zostało wybrane po wynikach; ale na train i cal okazało się najlepsze, co trzeba w pracy zaznaczyć.
+- AUROC (średnia, 5.–95. percentyl powtórzeń):
+
+| etykiet | kNN k=20 | LR na 8 cechach nimble | zero-shot (0 etykiet) |
+|---|---|---|---|
+| 10 | 0,533 | 0,587 | 0,686 |
+| 50 | 0,553 | 0,642 | 0,683 |
+| 100 | 0,580 | 0,656 | 0,681 |
+| 200 | 0,612 | 0,676 | 0,683 |
+| 500 | 0,649 | 0,690 | 0,683 |
+| 1000 | 0,670 | 0,693 | 0,683 |
+| 1500 | 0,674 | 0,687 | 0,674 |
+
+- Wniosek (ocena asystenta): jedno pytanie zero-shot do modelu decyzyjnego daje ranking, który kNN osiąga dopiero przy ok. 1000–1500 etykietach; regresja na 8 cechach przegania zero-shot od ok. 500 etykiet. Etykiety są więc potrzebne głównie do progu i do ostatnich setnych AUROC, nie do samego rankingu. Ograniczenia: tylko train; wariant „kNN + LR(8)” w skrypcie ma przeciek po stronie uczenia (kNN liczony w próbce), więc jego wyników nie interpretować.
+
+### 100. basal-2.0-4.5B-MLX-8bit: wyniki na train i cal (2026-10-25)
+- Przebieg: train 2151 (40 brakujących po incydencie z wpisu 98 dociągnięte drugim uruchomieniem, 0 błędów), cal 859 (0 błędów). Ten sam zamrożony zestaw v1, te same skrypty co dla `nimble` (wpisy 89–93). `basal-serve` ignoruje pole `model`.
+- **Train (CV po grupach):** pojedyncze pytania AUROC: long_answer 0,667, open_ended 0,646, rare_knowledge 0,613, multistep 0,599, code 0,571, constraints 0,564, single_correct 0,374 (odwr. 0,626), small_model_enough 0,383 (odwr. 0,617; u `nimble` 0,683). LR na 8 cechach 0,675 [0,653; 0,699] vs kNN 0,688. kNN + basal: zysk AUROC +0,020 [+0,002; +0,038]; w strefie 0,20–0,45 zysk +0,077 [+0,041; +0,113]. Spearman z kNN 0,52 (`nimble` 0,60).
+- **Cal (protokół z wpisu 91):** G1 zysk AUROC w strefie +0,084 [+0,025; +0,144] → GO dla G1 (`nimble`: +0,066 [+0,007; +0,126]); zysk APGR w strefie +0,048 [+0,006; +0,093]. Cały cal: basal sam 0,703 (kNN 0,690); kNN + basal 0,730, zysk +0,040 [+0,019; +0,061], APGR +0,023 [+0,010; +0,038]; router ze strefą zysk +0,019 [+0,004; +0,035]. G3: poważne błędy 2,9% vs kNN 3,7%, różnica −0,007 [−0,015; 0,000].
+- Czas w pliku: p50 3,5 s, p90 4,4 s, ale mierzony po stronie klienta przy współbieżności 2 (żądania czekają w kolejce serwera); pojedyncze żądanie z 8 pytaniami ok. 1,4 s.
+- **Uwaga (ocena asystenta):** basal wypada na cal trochę lepiej niż `nimble`, ale przedziały mocno się nakładają; porównanie dwóch modeli na tym samym cal to już wybór modelu na cal, więc wynik cal przestaje być czystym pomiarem. Kolejne modele tylko na train (wpis 98). Zaskoczenie: bezpośrednie pytanie `small_model_enough` jest u basal słabsze, a zysk daje kombinacja pytań o cechy (open_ended, long_answer, single_correct).
+- Wyniki surowe: scratchpad sesji (`eval.txt`, `vs.txt`, `cal.txt`); do odtworzenia tymi samymi komendami z plikami `layer3_systemone_basal-2.0-4.5B-MLX-8bit_v1{,_cal}.jsonl`.
+
+### 101. Kolejka modeli na train uruchomiona (2026-10-25)
+- `basal-serve` zatrzymany (zwolnienie pamięci), Ollama zrestartowana (`OLLAMA_NUM_PARALLEL=1`).
+- Próba na 3 pytaniach dla każdego modelu decyzyjnego z Ollamy przez natywne `/v1/systemone` (`eval/layer3_systemone.py --url http://localhost:11434`): `strands-decider:2b`, `tev1:4b`, `laya`, `d1:3b`, `kev` – wszystkie 0 błędów, poprawny format odpowiedzi; ok. 1–3 s na pytanie (8 pytań zestawu v1).
+- W tle, po kolei (jeden model naraz, restart Ollamy przed każdym): `qwen3:8b` samoocena (`eval/layer3_selfassess.py --splits train`), potem `strands-decider:2b`, `laya`, `d1:3b`, `tev1:4b`, `kev` na train, współbieżność 1. Szacunkowo kilka godzin. Ocena tylko na train (`layer3_systemone_vs_knn.py`), zgodnie z wpisem 98.
+- Stan pamięci przed startem: swap 5,1 GB z 6 GB użyte – do obserwacji.
+
+### 102. Wyniki na train: samoocena `qwen3:8b`, `strands-decider:2b`, `laya` (2026-10-25)
+Tylko train, CV po grupach (`eval/layer3_systemone_eval.py`, `eval/layer3_systemone_vs_knn.py`); kNN 0,686–0,688. W tabelach skryptów „nimble (8)” oznacza LR na cechach danego modelu (nazwa na sztywno); dla samooceny „small_model_enough” to `self_simple` (pierwsza cecha).
+
+| model | najlepsze pojedyncze pytanie (AUROC, z odwróceniem) | LR na cechach | kNN + model, zysk (cały train) | zysk w strefie 0,20–0,45 | p50 czasu |
+|---|---|---|---|---|---|
+| `nimble` (wpis 89–90) | small_model_enough 0,683 | 0,695 | +0,024 [0,006; 0,041] | +0,081 [0,042; 0,116] | 3,7 s |
+| basal-2.0-4.5B (wpis 100) | long_answer 0,667 | 0,675 | +0,020 [0,002; 0,038] | +0,077 [0,041; 0,113] | ok. 1,4 s |
+| `strands-decider:2b` | small_model_enough 0,646 | 0,683 | +0,026 [0,008; 0,042] | +0,083 [0,047; 0,122] | 1,2 s |
+| `qwen3:8b` samoocena (2 prompty) | self_can_answer 0,622, self_simple 0,597 | 0,630 | +0,010 [−0,003; 0,024] | +0,045 [0,009; 0,081] | 0,5 s |
+| `laya` (ModernBERT 0,8 GB) | code ok. 0,57 | 0,570 | 0,000 [−0,011; 0,010] | +0,002 [−0,026; 0,030] | – |
+
+- Wniosek (ocena asystenta): `strands-decider:2b` (2 GB, Apache-2.0) jest na train praktycznie równy `nimble` przy ok. 3× krótszym czasie; samoocena małego modelu jest wyraźnie słabsza (logprobs pierwszego tokenu, bez rozumowania); `laya` nie niesie sygnału ponad kNN. Wszystkie modele, które działają, czerpią sygnał z tych samych pytań (long_answer, open_ended, single_correct, small_model_enough), korelacja z kNN ok. 0,5.
+- Kolejka trwa: `d1:3b` (207/2151 o 17:10), potem `tev1:4b`, `kev`. Swap 4,6 GB / 6 GB.
+
+### 103. Stan na wieczór 2026-10-25: ocena warstwy 3 i dalsze kroki
+- **Ocena asystenta (do decyzji autora):** warstwa 3 do pracy jako opcjonalne rozszerzenie, nie główny wynik. Za: G1 przeszły na cal dwa różne modele (`nimble`, basal), na train podobnie `strands-decider:2b`, więc efekt jest powtarzalny; zero-shot działa bez etykiet (krzywa uczenia, wpis 99); pasuje do architektury (tylko strefa niepewności, awaria → duży). Przeciw: zysk całego routera mały (AUROC +0,013 n.s. / +0,019, APGR bez zmian, poważne błędy 3,7% → 2,9–3,4%); koszt czasu 1,2–3,7 s na Macu przy ok. połowie zapytań; cal użyty do porównania modeli.
+- **„Cal zużyty”** (wyjaśnienie dla autora): po porównaniu kilku modeli na cal i wyborze lepszego jego wynik na cal jest zawyżony szczęściem (efekt wyboru zwycięzcy); cal był też wcześniej użyty przy kNN. Dlatego dalsze porównania i wybór modelu tylko na train (CV po grupach), a niezależną liczbę da jednorazowe otwarcie testu na zamrożonej konfiguracji.
+- **Proponowane kroki:** poczekać na `d1:3b`, `tev1:4b`, `kev`; wybrać jeden model (kandydaci `strands-decider:2b` lub basal: szybsze od `nimble`, otwarte licencje) i ewentualnie skrócić zestaw do 3–4 pytań – decyzje na train; zamrozić konfigurację; zmierzyć czas na GPU (maszyna `df-5070ti`, pomiar na miejscu bez VPN: rozgrzewka, p50/p90/p99 przy 1 żądaniu, zestawy 1/4/8 pytań, długość zapytania, przepustowość przy 4/8 równoległych, `nvidia-smi`; 200–300 pytań z train); basal na CUDA do sprawdzenia (`basal-serve --help`).
+- Commit stanu notatek i skryptów warstwy 3 na prośbę autora (dane w `data/datasets/` poza gitem).
