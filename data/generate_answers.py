@@ -27,8 +27,15 @@ def build_prompt(record: dict[str, Any]) -> str:
 def done_keys(path: Path) -> set[tuple[str, str, int]]:
     if not path.exists():
         return set()
+    keys: set[tuple[str, str, int]] = set()
     with path.open(encoding="utf-8") as f:
-        return {(r["id"], r["model"], r["sample"]) for r in map(json.loads, filter(str.strip, f))}
+        for line in filter(str.strip, f):
+            try:
+                r = json.loads(line)
+            except ValueError:
+                continue  # linia urwana przy przerwaniu: zadanie zostanie powtórzone
+            keys.add((r["id"], r["model"], r["sample"]))
+    return keys
 
 
 async def call(client: httpx.AsyncClient, url: str, body: dict[str, Any], retries: int = 3) -> dict[str, Any]:
@@ -53,6 +60,9 @@ async def run(args: argparse.Namespace) -> None:
         rows = rows[: args.limit]
 
     out = Path(args.output)
+    if out.exists() and out.stat().st_size and not out.read_bytes().endswith(b"\n"):
+        with out.open("a", encoding="utf-8") as f:
+            f.write("\n")  # po przerwaniu w trakcie zapisu nowe wiersze nie mogą dokleić się do urwanego
     done = done_keys(out)
     jobs = [
         (r, model, s)
