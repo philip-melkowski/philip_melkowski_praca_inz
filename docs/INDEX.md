@@ -38,7 +38,7 @@ Zacznij od `STATUS.md`. Reszty szukaj tu. Kolumna „Status”: **aktualny**, **
 |---|---|---|
 | `praca/01_dane_i_etykiety.md`, `praca/02_router.md` | robocze szkice rozdziałów (z [UZUPEŁNIĆ]) | aktualny, do redakcji przez autora |
 | `PREZENTACJA_zarys.md` | zarys 12 slajdów | historyczny |
-| `prezentacja_postepy.pptx`, `prezentacja_notatki.js` | stara kopia prezentacji (16 slajdów) | zastąpiony: aktualna jest prezentacja Keynote autora (14 slajdów, poza repozytorium); nie przebudowywać |
+| `prezentacja_postepy.pptx`, `prezentacja_notatki.js` | stara kopia prezentacji (16 slajdów) | zastąpiony: aktualna jest prezentacja Keynote autora (15 slajdów od 27.10, poza repozytorium, wpis 114); nie przebudowywać |
 | `references/routellm_notes.md`, `references/routellm_notes.pdf` | notatki z RouteLLM (ok. 470 linii; czytać fragmentami) | aktualny |
 | `references/STRUKTURA_REPO_DLA_AGENTOW.md` | przegląd literatury o urządzaniu repozytorium dla agentów i co z niego zastosowano | aktualny |
 
