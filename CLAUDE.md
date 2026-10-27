@@ -18,7 +18,7 @@ Praca inżynierska: dynamiczny i semantyczny routing zapytań LLM według złoż
 - Płatne wywołania API (Gemini, Jev w chmurze): tylko po zgodzie autora na konkretny wydatek. Nie wysyłaj danych z `data/datasets/` do zewnętrznych usług.
 - Commit i push tylko na prośbę autora. Push wyłącznie do `origin` (fork `philip-melkowski/philip_melkowski_praca_inz`); do repozytorium `simplito` nigdy. W DF nie dodawaj `Co-Authored-By` (ich `CLAUDE.md` tego zakazuje).
 - Wyniki podawaj wiernie: jeśli test nie przeszedł albo krok pominięto, napisz to wprost, z wyjściem polecenia.
-- Prezentacja: edytuje się tylko plik Keynote autora (`~/Desktop/prezentacja_postepy.key`); nie przebudowuj `docs/prezentacja_postepy.pptx`. Po zmianie prezentacji lub notatek sprawdź spójność całej prezentacji.
+- Prezentacja postępów istnieje jako plik Keynote autora (poza repozytorium; lokalizację poda autor).
 - Autor skarży się na wolne i skomplikowane odpowiedzi: bądź zwięzły i efektywny.
 
 ## Twarde reguły danych i pomiaru
