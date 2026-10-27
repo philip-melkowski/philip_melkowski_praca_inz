@@ -18,6 +18,18 @@ Praca samodzielna na prośbę autora. Szczegóły, liczby i wszystkie warianty: 
    Górna granica to mniej więcej 0,75 AUROC na całości i 0,71 w strefie.
 5. **Koszt.** Czas Clefa rośnie mniej więcej liniowo z liczbą pytań (p50 przez internet): 8 pytań 0,41 s, 34 pytania 1,5 s. Krótszego zestawu z tym samym zyskiem nie udało się znaleźć.
 
+## Mały model d1:3b na tej samej puli (dopisane po zakończeniu przebiegu)
+
+- GBM na 34 pytaniach: strefa 0,696, całość 0,747. To prawie tyle co Clef 27B (0,708 / 0,750). Sam d1 bez kNN: 0,745.
+- U d1 większość zysku daje sam GBM, bo na v1 GBM miał już 0,738. U Clefa zysk daje głównie pula: GBM na v1 0,721, z pulą 0,750.
+- Wniosek: tani model 3B jest realną alternatywą dla 27B; o wyborze zdecyduje czas na docelowym GPU.
+
+## strands-decider:2b na tej samej puli (dopisane po zakończeniu przebiegu)
+
+- GBM na 34 pytaniach: strefa 0,675, całość 0,726. To wyraźnie mniej niż d1 (0,696 / 0,747) i Clef (0,708 / 0,750). Sam strands bez kNN: 0,725.
+- Pula + GBM względem v1: strefa +0,024, nieistotne.
+- Wniosek: kandydaci na model L3 to Clef 27B i d1 3B.
+
 ## Co sprawdzono
 
 | Ścieżka | Wynik (strefa AUROC, train, chyba że zaznaczono) | Wniosek |
