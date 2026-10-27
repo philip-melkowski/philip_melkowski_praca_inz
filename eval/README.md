@@ -48,6 +48,10 @@ Kolumna „Wpis” to **pierwszy** wpis `docs/DZIENNIK.md`, w którym skrypt wys
 | `layer3_selfassess.py` | samoocena `qwen3:8b` z logprobs (natywne `/api/chat`) | 98 |
 | `layer3_learning_curve.py` | ile etykiet potrzebuje kNN, by dogonić zero-shot | 99 |
 | `layer3_questions/v1.json` | **zamrożony** zestaw 8 pytań `noul` (SHA-256 we wpisie 91) | 86, 91 |
+| `layer3_questions/pool_v2.json`, `layer3_questions/pool_v3_extra.json` | pula 34 pytań (v1 + 26 nowych) i 20 pytań o formę i intencję; v1 bez zmian | 112 |
+| `layer3_select.py` | wybór pytań (zachłanny, najlepsze pojedynczo; zagnieżdżona CV po grupach), LR na wszystkich, GBM, kilka modeli naraz, `--dump` wyników poza próbką (train) | 112 |
+| `layer3_cal_confirm.py` | jednorazowe potwierdzenie na cal: uczenie na train, v1 LR vs wszystkie LR vs GBM, router ze strefą | 112 |
+| `layer3_llm_rate.py` | model językowy (np. duży Qwen przez DF) ocenia pytanie cyfrą 0–9 (różnica duży–mały, trudność); ścieżka odrzucona | 112 |
 
 ## Dane oceny człowieka i wykresy
 | Skrypt | Do czego | Wpis |

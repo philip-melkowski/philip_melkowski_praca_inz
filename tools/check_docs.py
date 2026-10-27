@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
 CHECKED = ["CLAUDE.md", "docs/STATUS.md", "docs/INDEX.md", "docs/DECYZJE.md", "data/README.md", "eval/README.md"]
 TOP_DIRS = ("docs/", "eval/", "data/", "tools/", "archiwum/")
-FILE_SUFFIXES = (".md", ".py", ".sh", ".json", ".npz", ".js", ".pdf")
+FILE_SUFFIXES = (".md", ".py", ".sh", ".js", ".pdf")  # bez plików danych (.npz, .json…): leżą w data/datasets/ tylko na jednym z komputerów
 STATUS_MAX_LINES = 100
 
 

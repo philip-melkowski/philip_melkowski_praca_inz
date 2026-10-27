@@ -9,13 +9,14 @@ Zacznij od `STATUS.md`. Reszty szukaj tu. Kolumna „Status”: **aktualny**, **
 | `STATUS.md` | gdzie jesteśmy, co w toku, co czeka na autora (importowany z `CLAUDE.md`) | aktualny |
 | `DECYZJE.md` | rejestr: co obowiązuje, co zastąpione lub odrzucone, z numerami wpisów | aktualny |
 | `KONCEPCJA.md` | plan pracy (kanoniczna kopia; zmienia go tylko autor) | aktualny, z odchyleniami w `DECYZJE.md` |
-| `DZIENNIK.md` | chronologia wszystkich kroków i decyzji (wpisy 1–110). **Czytaj od końca** albo `grep -n "^### 10[0-9]"`; dopisuj na dole | aktualny |
+| `DZIENNIK.md` | chronologia wszystkich kroków i decyzji (wpisy 1–112). **Czytaj od końca** albo `grep -n "^### 10[0-9]"`; dopisuj na dole | aktualny |
 
 ## Wyniki i analizy
 
 | Plik | Do czego | Status |
 |---|---|---|
-| `WARSTWA3_nimble_wyniki.md` | wynik testu go/no-go warstwy 3 na `nimble` (train i cal), cele G1–G8 | aktualny (stan 24.10; dalsze modele: wpisy 95–104) |
+| `WARSTWA3_PULA_PYTAN_2026-10-27.md` | warstwa 3: Clef 27B, pula 34 pytań + GBM (potwierdzenie na cal), sam model decyzyjny bez kNN, ścieżki odrzucone | aktualny (27.10; wpisy 111–112) |
+| `WARSTWA3_nimble_wyniki.md` | wynik testu go/no-go warstwy 3 na `nimble` (train i cal), cele G1–G8 | historyczny (24.10); dalsze modele: wpisy 95–104, nowsze wyniki w pliku wyżej |
 | `WARSTWA3_propozycja.md` | warianty A–E i cele G1–G8 przed testem | historyczny; wyniki w pliku wyżej |
 | `PRZEMYSLENIA_2026-10-25.md` | opinie asystenta i wyniki agentów badawczych (literatura, szum etykiet, benchmark); **sekcja 9: znane niespójności dokumentów** | aktualny; to propozycje, nie decyzje |
 | `CELE_PRZED_TESTEM.md` | cele liczbowe C1–C6 przed otwarciem testu | propozycja niezatwierdzona; zdanie o warstwie 3 nieaktualne (D16) |
