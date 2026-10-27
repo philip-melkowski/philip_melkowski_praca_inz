@@ -1,5 +1,7 @@
 # Start na komputerze służbowym: test warstwy 3 (modele decyzyjne)
 
+> **Zastąpiona (2026-10-27).** Notatka z 24.10 dla pierwszej sesji na komputerze służbowym. Aktualny start: `CLAUDE.md` i `docs/STATUS.md`. Poniższy tekst zostaje jako zapis historyczny; stan prac i zasady w nim opisane mogą być nieaktualne.
+
 Notatka dla Claude'a uruchomionego na komputerze służbowym autora (inne konto Claude, bez historii rozmowy). Przeczytaj ją najpierw, potem `CLAUDE.md` w katalogu głównym repozytorium i końcówkę `docs/DZIENNIK.md` (wpisy 79 i późniejsze).
 
 ## 0. Układ katalogów na tym komputerze (inny niż w `CLAUDE.md`)
