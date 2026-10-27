@@ -45,5 +45,5 @@ Pliki z tej tabeli i `layer3_systemone_*.jsonl` (wyniki warstwy 3) powstały na 
 ## Podkatalogi
 
 - `arena/`, `synthetic/`, `build_dataset.py`: przygotowanie danych ze starego planu (etap 1, raporty w `docs/stage1/`); pytania Gemini i część Areny trafiły do `questions_v2.jsonl`.
-- `router/`: indeks kNN w gicie, używany przez `RouterService` (`DECYZJE.md` D13).
+- `router/`: indeks kNN w gicie, używany przez `RouterService` (`DECYZJE.md` D13), oraz parametry warstwy 3 dla `RouterService` (`router_l3_d1_v1.json`, `router_l3_clef_v1.json`: pytania v1 i wagi regresji uczonej na train, `eval/export_layer3_params.py`, wpis 115).
 - `router_l1.json`: tabela punktów i listy fraz warstwy 1, edytowalne bez zmiany kodu (`eval/l1_points.py` je generuje).

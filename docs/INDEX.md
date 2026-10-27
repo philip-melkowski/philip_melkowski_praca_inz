@@ -29,7 +29,7 @@ Zacznij od `STATUS.md`. Reszty szukaj tu. Kolumna „Status”: **aktualny**, **
 | Plik | Do czego | Status |
 |---|---|---|
 | `ROUTER_URUCHOMIENIE.md` | instalacja i uruchomienie usługi `router` w DF | aktualny (zdanie „nie uruchamiana z Qwenem” nieaktualne od wpisu 70) |
-| `ROUTER_TESTY_CURL.md` | zestaw żądań curl z oczekiwanymi i zaobserwowanymi wynikami | aktualny; testy E i G niewykonane |
+| `ROUTER_TESTY_CURL.md` | zestaw żądań curl z oczekiwanymi i zaobserwowanymi wynikami, w tym pokaz warstwy 3 (pkt 6) | aktualny; testy E, G i pkt 6 niewykonane |
 | `START_KOMPUTER_SLUZBOWY.md` | notatka startowa z 24.10 dla komputera służbowego | zastąpiony przez `CLAUDE.md` i `STATUS.md` |
 
 ## Praca i prezentacja
