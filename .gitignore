@@ -67,3 +67,7 @@ coverage.xml
 # Logs
 *.log
 logs/
+
+# Pozostałości w katalogu repozytorium (nie wersjonować)
+/deepfellow-infra/
+/do_przeniesienia/
