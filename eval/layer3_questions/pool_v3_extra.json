@@ -1,0 +1,162 @@
+{
+  "asks_list": {
+    "type": "noul",
+    "instructions": "Does the request ask for a list of items, ideas, options or examples?",
+    "criteria": {
+      "true": "a list is requested",
+      "false": "no list requested"
+    }
+  },
+  "asks_explanation": {
+    "type": "noul",
+    "instructions": "Does the request ask to explain how or why something works or happens?",
+    "criteria": {
+      "true": "an explanation is requested",
+      "false": "no explanation requested"
+    }
+  },
+  "asks_opinion_advice": {
+    "type": "noul",
+    "instructions": "Does the request ask for advice, a recommendation or a personal opinion?",
+    "criteria": {
+      "true": "advice or opinion is requested",
+      "false": "no advice or opinion requested"
+    }
+  },
+  "comparison": {
+    "type": "noul",
+    "instructions": "Does the request ask to compare two or more things?",
+    "criteria": {
+      "true": "a comparison is requested",
+      "false": "no comparison"
+    }
+  },
+  "step_by_step": {
+    "type": "noul",
+    "instructions": "Does the request explicitly ask for step-by-step reasoning or a detailed procedure?",
+    "criteria": {
+      "true": "step-by-step is requested",
+      "false": "not requested"
+    }
+  },
+  "contains_code_input": {
+    "type": "noul",
+    "instructions": "Does the request include program code, logs or error messages written by the user?",
+    "criteria": {
+      "true": "code or logs are included",
+      "false": "no code or logs included"
+    }
+  },
+  "contains_data": {
+    "type": "noul",
+    "instructions": "Does the request include data such as a table, numbers, JSON or a long document to work with?",
+    "criteria": {
+      "true": "data or a document is included",
+      "false": "no data included"
+    }
+  },
+  "math_notation": {
+    "type": "noul",
+    "instructions": "Does the request contain mathematical formulas, equations or symbolic notation?",
+    "criteria": {
+      "true": "math notation is present",
+      "false": "no math notation"
+    }
+  },
+  "very_short": {
+    "type": "noul",
+    "instructions": "Is the request very short (one short sentence or a few words)?",
+    "criteria": {
+      "true": "very short",
+      "false": "longer than one short sentence"
+    }
+  },
+  "multiple_tasks": {
+    "type": "noul",
+    "instructions": "Does the request contain several separate questions or tasks?",
+    "criteria": {
+      "true": "several separate tasks",
+      "false": "a single task"
+    }
+  },
+  "informal_errors": {
+    "type": "noul",
+    "instructions": "Is the request written informally, with typos, slang or grammatical errors?",
+    "criteria": {
+      "true": "informal or with errors",
+      "false": "carefully written"
+    }
+  },
+  "user_expert": {
+    "type": "noul",
+    "instructions": "Does the user appear to be an expert who expects a technically precise, advanced answer?",
+    "criteria": {
+      "true": "the user seems to be an expert",
+      "false": "a general user"
+    }
+  },
+  "beginner_level": {
+    "type": "noul",
+    "instructions": "Is the request aimed at a beginner level, such as explaining something simply?",
+    "criteria": {
+      "true": "beginner-level answer expected",
+      "false": "not beginner-level"
+    }
+  },
+  "sensitive_topic": {
+    "type": "noul",
+    "instructions": "Is the request about a sensitive, controversial or potentially harmful topic (politics, health, violence, adult content)?",
+    "criteria": {
+      "true": "sensitive or controversial",
+      "false": "not sensitive"
+    }
+  },
+  "refusal_likely": {
+    "type": "noul",
+    "instructions": "Would a cautious assistant be likely to refuse or heavily hedge its answer to this request?",
+    "criteria": {
+      "true": "refusal or hedging is likely",
+      "false": "a normal answer is expected"
+    }
+  },
+  "factual_lookup": {
+    "type": "noul",
+    "instructions": "Is this a simple factual lookup question with a short known answer?",
+    "criteria": {
+      "true": "simple factual lookup",
+      "false": "not a simple lookup"
+    }
+  },
+  "specific_software": {
+    "type": "noul",
+    "instructions": "Does the request involve a specific software product, library, API or tool and its exact behavior?",
+    "criteria": {
+      "true": "specific software or API involved",
+      "false": "no specific software"
+    }
+  },
+  "needs_current_info": {
+    "type": "noul",
+    "instructions": "Would a good answer need up-to-date information that may have changed recently (prices, versions, news)?",
+    "criteria": {
+      "true": "up-to-date information is needed",
+      "false": "timeless information is enough"
+    }
+  },
+  "personal_context": {
+    "type": "noul",
+    "instructions": "Does the request depend on the user's personal situation described in it (their plans, problems, preferences)?",
+    "criteria": {
+      "true": "depends on personal context",
+      "false": "general request"
+    }
+  },
+  "output_language_quality": {
+    "type": "noul",
+    "instructions": "Does a good answer depend mostly on elegant, fluent writing style rather than on facts or reasoning?",
+    "criteria": {
+      "true": "writing style matters most",
+      "false": "facts or reasoning matter most"
+    }
+  }
+}

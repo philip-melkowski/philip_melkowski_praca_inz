@@ -1,0 +1,274 @@
+{
+  "rare_knowledge": {
+    "type": "noul",
+    "instructions": "Does answering this request well require rare, specialized or obscure factual knowledge (niche facts, specific names, dates, technical details) that a small language model is likely not to know?",
+    "criteria": {
+      "true": "rare or specialized knowledge is needed",
+      "false": "common knowledge or no factual knowledge is enough"
+    }
+  },
+  "multistep": {
+    "type": "noul",
+    "instructions": "Does answering this request require multi-step reasoning or calculation, where several intermediate steps must all be correct?",
+    "criteria": {
+      "true": "several dependent reasoning or calculation steps are needed",
+      "false": "the answer follows directly in one step"
+    }
+  },
+  "code": {
+    "type": "noul",
+    "instructions": "Does answering this request require writing, fixing or explaining non-trivial program code?",
+    "criteria": {
+      "true": "non-trivial code must be written, fixed or explained",
+      "false": "no code, or only a trivial snippet"
+    }
+  },
+  "long_answer": {
+    "type": "noul",
+    "instructions": "Does a good answer to this request need to be long (more than about 300 words or a longer piece of code)?",
+    "criteria": {
+      "true": "a long answer is needed",
+      "false": "a short answer is enough"
+    }
+  },
+  "single_correct": {
+    "type": "noul",
+    "instructions": "Does this request have a single verifiable correct answer (a fact, a number, or code that must pass tests)?",
+    "criteria": {
+      "true": "there is one verifiable correct answer",
+      "false": "many different answers can be acceptable"
+    }
+  },
+  "open_ended": {
+    "type": "noul",
+    "instructions": "Is this an open-ended request (creative writing, opinion, casual conversation) where many different answers are good?",
+    "criteria": {
+      "true": "open-ended, many answers are good",
+      "false": "a specific answer is expected"
+    }
+  },
+  "constraints": {
+    "type": "noul",
+    "instructions": "Does this request contain many explicit requirements the answer must satisfy (format, length, style, conditions)?",
+    "criteria": {
+      "true": "several explicit requirements must be satisfied",
+      "false": "few or no explicit requirements"
+    }
+  },
+  "small_model_enough": {
+    "type": "noul",
+    "instructions": "Would a small assistant model (about 8 billion parameters) answer this request as well as a large, strong model?",
+    "criteria": {
+      "true": "a small model would answer it as well",
+      "false": "a large model would answer it clearly better"
+    }
+  },
+  "non_english": {
+    "type": "noul",
+    "instructions": "Is this request written, fully or partly, in a language other than English, or does the answer have to be written in a language other than English?",
+    "criteria": {
+      "true": "a non-English language is involved",
+      "false": "English only"
+    }
+  },
+  "translation": {
+    "type": "noul",
+    "instructions": "Is this request mainly about translating text between languages or explaining words across languages?",
+    "criteria": {
+      "true": "translation or cross-language task",
+      "false": "not a translation task"
+    }
+  },
+  "roleplay": {
+    "type": "noul",
+    "instructions": "Does this request ask the assistant to play a role, persona or character, or to answer in a specific voice or style of a person?",
+    "criteria": {
+      "true": "role-play or persona is requested",
+      "false": "no role or persona"
+    }
+  },
+  "trick_question": {
+    "type": "noul",
+    "instructions": "Is this a trick question, riddle or puzzle, or does it contain a false premise or misleading wording that a careless answer would fall for?",
+    "criteria": {
+      "true": "it is tricky, a careless answer would be wrong",
+      "false": "straightforward, no trap"
+    }
+  },
+  "ambiguous": {
+    "type": "noul",
+    "instructions": "Is this request ambiguous or underspecified, so that a good answer must notice the ambiguity or make careful assumptions?",
+    "criteria": {
+      "true": "ambiguous or underspecified",
+      "false": "clear and well specified"
+    }
+  },
+  "spatial_physical": {
+    "type": "noul",
+    "instructions": "Does answering require commonsense reasoning about the physical world, space, objects or time (for example stacking objects, directions, time zones, dates)?",
+    "criteria": {
+      "true": "physical, spatial or temporal reasoning is needed",
+      "false": "no such reasoning"
+    }
+  },
+  "exact_calculation": {
+    "type": "noul",
+    "instructions": "Does the answer depend on an exact calculation, conversion or count that must be computed correctly?",
+    "criteria": {
+      "true": "an exact calculation or count is needed",
+      "false": "no exact computation"
+    }
+  },
+  "exact_facts": {
+    "type": "noul",
+    "instructions": "Must the answer contain exact facts such as names, dates, numbers or quotations, where a small error makes the answer wrong?",
+    "criteria": {
+      "true": "exact facts are needed and errors are costly",
+      "false": "no exact facts needed"
+    }
+  },
+  "recent_events": {
+    "type": "noul",
+    "instructions": "Does answering well require knowledge of specific real-world events, people or products, especially recent or local ones?",
+    "criteria": {
+      "true": "specific real-world events or entities",
+      "false": "general or timeless content"
+    }
+  },
+  "hallucination_risk": {
+    "type": "noul",
+    "instructions": "Is a weaker language model likely to invent false facts or details when answering this request?",
+    "criteria": {
+      "true": "high risk of made-up facts",
+      "false": "low risk of made-up facts"
+    }
+  },
+  "expert_domain": {
+    "type": "noul",
+    "instructions": "Does this request require expert-level knowledge of a professional or academic field (for example medicine, law, physics, advanced mathematics, finance)?",
+    "criteria": {
+      "true": "expert-level domain knowledge is needed",
+      "false": "no expert knowledge needed"
+    }
+  },
+  "deep_analysis": {
+    "type": "noul",
+    "instructions": "Does a good answer require nuanced, in-depth analysis or argumentation (for example comparing theories, ethical dilemmas, philosophy)?",
+    "criteria": {
+      "true": "deep, nuanced analysis is needed",
+      "false": "a simple or factual answer is enough"
+    }
+  },
+  "creative_writing": {
+    "type": "noul",
+    "instructions": "Is this a creative writing request (story, poem, song, fictional scene, slogan)?",
+    "criteria": {
+      "true": "creative writing",
+      "false": "not creative writing"
+    }
+  },
+  "wordplay_humor": {
+    "type": "noul",
+    "instructions": "Does the request involve humor, puns, rhymes, wordplay or a strict poetic form?",
+    "criteria": {
+      "true": "humor or wordplay is involved",
+      "false": "no humor or wordplay"
+    }
+  },
+  "rewrite_given_text": {
+    "type": "noul",
+    "instructions": "Is the main task to rewrite, polish, shorten, summarize or reformat a text that is given in the request?",
+    "criteria": {
+      "true": "transform a given text",
+      "false": "not a transformation of given text"
+    }
+  },
+  "self_contained": {
+    "type": "noul",
+    "instructions": "Is all information needed for a good answer contained in the request itself?",
+    "criteria": {
+      "true": "everything needed is in the request",
+      "false": "outside knowledge is needed"
+    }
+  },
+  "casual_chat": {
+    "type": "noul",
+    "instructions": "Is this casual small talk, a greeting or a simple social message?",
+    "criteria": {
+      "true": "casual conversation",
+      "false": "a real task or question"
+    }
+  },
+  "strict_format": {
+    "type": "noul",
+    "instructions": "Does the request demand a strict output format (for example only one letter, JSON, a fixed number of words or items)?",
+    "criteria": {
+      "true": "a strict output format is demanded",
+      "false": "free format"
+    }
+  },
+  "complex_code": {
+    "type": "noul",
+    "instructions": "Does the request require writing a larger or tricky program (several functions, specific libraries, edge cases, performance)?",
+    "criteria": {
+      "true": "a larger or tricky program is needed",
+      "false": "no code or only simple code"
+    }
+  },
+  "planning_constraints": {
+    "type": "noul",
+    "instructions": "Does the request ask for a plan, schedule or recommendation that must satisfy several practical constraints at once?",
+    "criteria": {
+      "true": "a plan under several constraints",
+      "false": "no constrained planning"
+    }
+  },
+  "hard_for_ai": {
+    "type": "noul",
+    "instructions": "Is this request hard for an AI assistant to answer really well?",
+    "criteria": {
+      "true": "hard to answer well",
+      "false": "easy to answer well"
+    }
+  },
+  "large_clearly_better": {
+    "type": "noul",
+    "instructions": "Would a large, strong language model give a clearly better answer to this request than a small 8-billion-parameter model?",
+    "criteria": {
+      "true": "the large model would be clearly better",
+      "false": "both would give similarly good answers"
+    }
+  },
+  "both_fail": {
+    "type": "noul",
+    "instructions": "Is this request so hard, obscure or impossible that even a strong language model would probably give a poor answer?",
+    "criteria": {
+      "true": "even a strong model would likely fail",
+      "false": "a strong model would answer well"
+    }
+  },
+  "any_model_ok": {
+    "type": "noul",
+    "instructions": "Could almost any AI assistant, even a small one, answer this request correctly and well?",
+    "criteria": {
+      "true": "almost any assistant could answer it well",
+      "false": "only a capable assistant could answer it well"
+    }
+  },
+  "quality_sensitive": {
+    "type": "noul",
+    "instructions": "Is the difference between an average answer and an excellent answer to this request large and easy to notice?",
+    "criteria": {
+      "true": "quality differences are large and noticeable",
+      "false": "most reasonable answers are about equally good"
+    }
+  },
+  "subtle_reasoning": {
+    "type": "noul",
+    "instructions": "Does answering correctly require careful reading and subtle reasoning, such as resolving references, logic or implicit meaning?",
+    "criteria": {
+      "true": "careful, subtle reasoning is required",
+      "false": "no subtle reasoning"
+    }
+  }
+}

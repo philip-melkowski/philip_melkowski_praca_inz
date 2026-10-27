@@ -22,7 +22,7 @@ Praca inżynierska: dynamiczny i semantyczny routing zapytań LLM według złoż
 - Autor skarży się na wolne i skomplikowane odpowiedzi: bądź zwięzły i efektywny.
 
 ## Twarde reguły danych i pomiaru
-- **Zbiór `test` jest zamknięty**: nie używać go do strojenia, wyboru ani podglądu wyników. Strojenie tylko walidacją krzyżową po grupach na train; `cal` jest „zużyty” (`docs/DECYZJE.md` D15), nowe warianty nie wracają na cal.
+- **Zbiór `test` jest zamknięty**: nie używać go do strojenia, wyboru ani podglądu wyników. Strojenie tylko walidacją krzyżową po grupach na train; `cal` jest „zużyty” (`docs/DECYZJE.md` D15, D15a): kolejne użycie tylko za zgodą autora, z planem porównań zapisanym przed wynikiem.
 - Zestaw pytań warstwy 3 `eval/layer3_questions/v1.json` jest zamrożony (SHA-256 w dzienniku, wpis 91): nie edytować.
 - Klucz Gemini tylko w `~/.config/inz/gemini_key` (chmod 600): nigdy w czacie, komendach, plikach ani logach. Klucz DF (`API_KEY`) bierze się z `~/.zshrc` autora.
 - `docs/kontrola_ludzka/klucz*.json` zawierają oceny sędziego: nie czytać przed oceną człowieka.

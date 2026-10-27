@@ -35,7 +35,10 @@ Statusy: **obowiązuje** / **zastąpiona** (przez kogo) / **odrzucona** / **prop
 |---|---|---|---|---|
 | D15 | Warstwa 3 jest wołana **tylko w strefie niepewności kNN** (wynik 0,20–0,45), jakość jako ograniczenie przy doborze strefy. Eksperymenty na train (CV po grupach); zestaw pytań v1 zamrożony (SHA-256 w dzienniku); cal użyty raz dla `nimble` i `basal-2.0-4.5B`; **kolejne modele tylko na train** | A | obowiązuje | 67, 68, 86, 91, 98 |
 | D16 | Warstwa 3 to model decyzyjny przez `POST /v1/systemone` (zamiast „małego modelu zero-shot z logprobs” z `KONCEPCJA.md`). Najpierw sam model, potem połączenie z kNN i heurystykami | A | obowiązuje jako kierunek eksperymentu (zmiana względem planu) | 79, 86 |
-| D17 | Go/no-go warstwy 3 i wybór modelu | A | **propozycja** (ocena asystenta: opcjonalne rozszerzenie, nie rdzeń) | 103 |
+| D17 | Go/no-go warstwy 3 i wybór modelu | A | **propozycja** (ocena asystenta: opcjonalne rozszerzenie, nie rdzeń; kandydat: Clef 27B) | 103, 111 |
+| D15a | Wyjątek od D15: jedno potwierdzenie na cal dla puli v2 z Clefem, z planem porównań zapisanym przed wynikiem; dalsze użycie cal tylko za zgodą autora | A | obowiązuje (zgoda autora 27.10: „mamy dane walidacyjne… zrób to po Clefie”) | 112 |
+| D18 | Pula 34 pytań (`pool_v2.json`) + GBM zamiast v1 + LR (lepsze AUROC, czas ok. ×3,7) | As | **propozycja** | 112 |
+| D19 | Porównać w pracy warianty routera z kosztem (sam kNN, sam model decyzyjny, kNN + L3 w strefie, kNN + L3 zawsze); listę i kryterium ustalić przed otwarciem testu | As | **propozycja** (może zmienić strukturę pracy) | 112 |
 
 ## Odrzucone lub sprawdzone bez przyjęcia (żeby nie zaczynać od nowa)
 
@@ -51,6 +54,11 @@ Statusy: **obowiązuje** / **zastąpiona** (przez kogo) / **odrzucona** / **prop
 | Inne embeddingi | patrz D11 | 30 |
 | Usuwanie uciętych odpowiedzi z danych | odrzucone (wypadłyby trudne, długie pytania) | 109 |
 | Limit 8192 dla uciętych | odrzucone (pętli nie naprawi, koszt godzin) | 109 |
+| Wybór podzbioru pytań warstwy 3 (zachłanny, najlepsze pojedynczo, wg ważności GBM) | nie lepszy niż wszystkie pytania; zysk rośnie z liczbą pytań | 112 |
+| Pula v3 (+20 pytań o formę i intencję) | nasycenie, brak zysku dla GBM | 112 |
+| Łączenie kilku modeli decyzyjnych | ≤ +0,01 AUROC, w granicach szumu | 112 |
+| Duży Qwen 27B oceniający pytanie cyfrą 0–9 | słabszy od Clefa, nic nie dodaje | 112 |
+| Cel ciągły (Δ, ql i qs osobno) zamiast etykiety binarnej | gorzej lub tak samo | 112 |
 
 ## Jak dodać decyzję
 Nowy wiersz w odpowiedniej tabeli (numer kolejny `D…`), wpis w `DZIENNIK.md`, a jeśli decyzja zastępuje starą, zmień status starej i podaj numer nowej. Plan (`KONCEPCJA.md`) zmienia tylko autor.
