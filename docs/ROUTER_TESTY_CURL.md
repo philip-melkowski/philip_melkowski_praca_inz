@@ -4,13 +4,14 @@ Zestaw żądań do pokazania działania routera w DeepFellow Infra (`model=route
 
 ## Jak czytać wynik
 
-Router dopisuje do odpowiedzi trzy nagłówki:
+Router dopisuje do odpowiedzi trzy nagłówki (czwarty, gdy decyduje warstwa 3):
 
 | Nagłówek | Znaczenie |
 |---|---|
 | `X-Router-Model` | model, który odpowiedział (mały `qwen3:8b` albo duży `Qwen/Qwen3.8-27B-FP8`) |
-| `X-Router-Layer` | warstwa, która podjęła decyzję: `heuristics` (warstwa 1), `knn` (warstwa 2), `fallback` (awaria routera → duży model) |
+| `X-Router-Layer` | warstwa, która podjęła decyzję: `heuristics` (warstwa 1), `knn` (warstwa 2), `decider` (warstwa 3), `fallback` (awaria routera → duży model) |
 | `X-Router-Score` | wynik kNN od 0 do 1 (udział pytań trudnych wśród 20 najbliższych sąsiadów); powyżej progu 0,3 → duży model. Przy warstwie `heuristics` nagłówka nie ma, bo embedding w ogóle nie jest liczony |
+| `X-Router-Decider-Score` | tylko przy warstwie 3: wynik regresji (wynik kNN + odpowiedzi modelu decyzyjnego), porównywany z tym samym progiem 0,3 |
 
 Warstwa 1 (heurystyki) działa tylko w jedną stronę: zapytanie z co najmniej 2 punktami idzie od razu do dużego modelu. Zapytanie poniżej 2 punktów przechodzi do kNN.
 
@@ -108,6 +109,48 @@ Narzut ok. 13 ms wg średnich (ok. 7 ms bez pierwszego, wolniejszego pomiaru), c
 
 ---
 
+## 6. Warstwa 3: model decyzyjny w strefie niepewności (nieuruchomione)
+
+Dodane 27.10 (dziennik, wpis 115). Warstwa 3 działa tylko, gdy wynik kNN jest w strefie 0,20–0,45. Wtedy router pyta model decyzyjny (`/v1/systemone`) o 8 pytań tak/nie z zestawu v1, łączy odpowiedzi z wynikiem kNN regresją logistyczną i porównuje wynik z progiem 0,3. Błąd albo przekroczenie czasu (5 s) modelu decyzyjnego → duży model (`fallback`).
+
+**Instalacja:** przy instalacji usługi `router` dodaj pole `decider_path` z pełną ścieżką do pliku parametrów:
+- `data/router/router_l3_d1_v1.json`: model `d1:3b`;
+- `data/router/router_l3_clef_v1.json`: model `clef:27b-q4_K_M`.
+
+Pole `model` w pliku musi być nazwą modelu, którą widzi DeepFellow (lokalnie albo przez mesh); jeśli jest inna, popraw ją w pliku. Wagi są uczone tylko na train (`eval/export_layer3_params.py`).
+
+Wartości „oczekiwane” niżej policzono kodem usługi (indeks train+cal, heurystyki, `Decider`) na zapisanych wcześniej odpowiedziach modelu decyzyjnego dla tych pytań (pytania z train). Na żywo mogą się nieznacznie różnić.
+
+### 6a. kNN mówi „mały”, warstwa 3 zmienia na „duży”
+
+```bash
+curl -i $BASE/v1/chat/completions -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" \
+  -d '{"model":"router","messages":[{"role":"user","content":"How many fish are there on earth? Please detail the way that led you to calculate the result."}],"reasoning_effort":"none"}'
+```
+
+- Oczekiwane: `X-Router-Layer: decider`, `X-Router-Score` ok. 0,263 (sam kNN wysłałby do małego), `X-Router-Decider-Score` ok. 0,455 (d1) albo 0,524 (Clef) → duży model. W danych to pytanie jest naprawdę COMPLEX.
+
+### 6b. kNN mówi „duży”, warstwa 3 zmienia na „mały”
+
+```bash
+curl -i $BASE/v1/chat/completions -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" \
+  -d '{"model":"router","messages":[{"role":"user","content":"What is the speed of light in water? Give the answer in kilometers per second."}],"reasoning_effort":"none"}'
+```
+
+- Oczekiwane: `X-Router-Layer: decider`, `X-Router-Score` ok. 0,392 (sam kNN wysłałby do dużego), `X-Router-Decider-Score` ok. 0,199 (d1) albo 0,276 (Clef) → mały model. W danych to pytanie jest SIMPLE.
+
+### 6c. Poza strefą warstwa 3 nie jest pytana
+
+Pytanie z punktu 1 (stolica Francji, wynik ok. 0,19) i z punktu 2 (opowiadanie, ok. 0,70) są poza strefą: `X-Router-Layer: knn`, bez nagłówka `X-Router-Decider-Score`. Inne pewne przykłady z train: `If all dogs are mammals, and my pet is a dog, is my pet a mammal?` (kNN ok. 0,09 → mały) i `Write a short scene from a novel where a beautiful, wicked lamia coils around an unfortunate, quippy human adventurer.` (kNN ok. 0,66 → duży).
+
+### 6d. Awaria modelu decyzyjnego → duży model
+
+Wyłącz model decyzyjny (albo wpisz w pliku parametrów nieistniejącą nazwę modelu i zainstaluj usługę ponownie), wyślij zapytanie z 6b.
+
+- Oczekiwane: `X-Router-Layer: fallback`, duży model, `X-Router-Score` ok. 0,392 jest obecny.
+
+---
+
 ## Dodatkowe zapytania (nieuruchomione)
 
 Punkty heurystyk poniżej policzono kodem usługi (`HeuristicScorer` z `data/router_l1.json`). To jest pewne. Wynik kNN (wybór modelu przy < 2 punktach) zależy od embeddingu i **nie jest sprawdzony**, więc podano tylko oczekiwanie.
@@ -157,7 +200,7 @@ curl -i $BASE/v1/chat/completions -H "Authorization: Bearer $KEY" -H "Content-Ty
 Każda decyzja jest zapisywana jako jedna linia:
 
 ```
-router decision: {"model": ..., "layer": ..., "score": ..., "heuristic": ..., "latency_ms": ...}
+router decision: {"model": ..., "layer": ..., "score": ..., "heuristic": ..., "decider_score": ..., "latency_ms": ...}
 ```
 
-Pole `latency_ms` to czas samej decyzji routera (bez generowania odpowiedzi), a `heuristic` to liczba punktów z warstwy 1.
+Pole `latency_ms` to czas samej decyzji routera (bez generowania odpowiedzi, ale z wywołaniem modelu decyzyjnego, jeśli był pytany), `heuristic` to liczba punktów z warstwy 1, a `decider_score` to wynik warstwy 3 (pusty, gdy nie była pytana).

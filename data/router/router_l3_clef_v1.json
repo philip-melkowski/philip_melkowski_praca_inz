@@ -1,0 +1,84 @@
+{
+  "model": "clef:27b-q4_K_M",
+  "questions": {
+    "rare_knowledge": {
+      "type": "noul",
+      "instructions": "Does answering this request well require rare, specialized or obscure factual knowledge (niche facts, specific names, dates, technical details) that a small language model is likely not to know?",
+      "criteria": {
+        "true": "rare or specialized knowledge is needed",
+        "false": "common knowledge or no factual knowledge is enough"
+      }
+    },
+    "multistep": {
+      "type": "noul",
+      "instructions": "Does answering this request require multi-step reasoning or calculation, where several intermediate steps must all be correct?",
+      "criteria": {
+        "true": "several dependent reasoning or calculation steps are needed",
+        "false": "the answer follows directly in one step"
+      }
+    },
+    "code": {
+      "type": "noul",
+      "instructions": "Does answering this request require writing, fixing or explaining non-trivial program code?",
+      "criteria": {
+        "true": "non-trivial code must be written, fixed or explained",
+        "false": "no code, or only a trivial snippet"
+      }
+    },
+    "long_answer": {
+      "type": "noul",
+      "instructions": "Does a good answer to this request need to be long (more than about 300 words or a longer piece of code)?",
+      "criteria": {
+        "true": "a long answer is needed",
+        "false": "a short answer is enough"
+      }
+    },
+    "single_correct": {
+      "type": "noul",
+      "instructions": "Does this request have a single verifiable correct answer (a fact, a number, or code that must pass tests)?",
+      "criteria": {
+        "true": "there is one verifiable correct answer",
+        "false": "many different answers can be acceptable"
+      }
+    },
+    "open_ended": {
+      "type": "noul",
+      "instructions": "Is this an open-ended request (creative writing, opinion, casual conversation) where many different answers are good?",
+      "criteria": {
+        "true": "open-ended, many answers are good",
+        "false": "a specific answer is expected"
+      }
+    },
+    "constraints": {
+      "type": "noul",
+      "instructions": "Does this request contain many explicit requirements the answer must satisfy (format, length, style, conditions)?",
+      "criteria": {
+        "true": "several explicit requirements must be satisfied",
+        "false": "few or no explicit requirements"
+      }
+    },
+    "small_model_enough": {
+      "type": "noul",
+      "instructions": "Would a small assistant model (about 8 billion parameters) answer this request as well as a large, strong model?",
+      "criteria": {
+        "true": "a small model would answer it as well",
+        "false": "a large model would answer it clearly better"
+      }
+    }
+  },
+  "intercept": -0.28190290563045867,
+  "knn_weight": 0.47609276568722547,
+  "weights": {
+    "rare_knowledge": 0.047874090508779416,
+    "multistep": 0.018762685767957657,
+    "code": 0.06879380397122854,
+    "long_answer": 0.04845378166550517,
+    "single_correct": -0.17327576457428767,
+    "open_ended": 0.021642663209116626,
+    "constraints": -0.14181373031416783,
+    "small_model_enough": -0.3883777196075875
+  },
+  "zone_low": 0.2,
+  "zone_high": 0.45,
+  "timeout_seconds": 5.0
+}
