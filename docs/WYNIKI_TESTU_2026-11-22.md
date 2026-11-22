@@ -18,6 +18,17 @@ Protokół: `PROTOKOL_TESTU_2026-11-22.md` (zapisany i zacommitowany przed otwar
 - **Progi z gwarancją (Bonferroni, D20)** wyznaczone na train + cal + `extra_train`: wszystkie spełnione na teście (np. błąd krytyczny ≤ 15%: 65,7% do małego, błąd 11,3%; COMPLEX ≤ 30%: 51,3% do małego, 27,0%).
 - **Według źródła (R0, v3):** GSM8K 0,931, wygenerowane przez Gemini 0,733, WildChat 0,596, Arena 0,584, HumanEval 0,527, TriviaQA 0,408 (wiedza faktograficzna nadal najsłabsza).
 
+## C4 i C5 (wpis 127)
+
+| Miara | Wynik | Cel |
+|---|---|---|
+| C4: zmiana decyzji R0 przy 30% do dużego (300 pytań testowych) | literówki 8,3%, synonimy 8,3%, parafrazy 13,0% (losowo 40,7%) | ≤ 15%: **spełniony** |
+| C5: decyzja R0 przez DF, DF i Ollama na jednym komputerze | p50 12,5 ms, p90 18,5 ms | < 50 ms: **spełniony** |
+| C5: decyzja R0 przez DF, embeddingi na zdalnym GPU przez tunel SSH/VPN | p50 61,2 ms, p90 74,6 ms | < 50 ms: niespełniony (sieć) |
+| R1: decyzja z warstwą 3 (d1 na GPU przez tunel) | p50 74,4 ms; zapytania z warstwą 3 p50 194,5 ms | bez celu |
+
+Uwaga: przy czterech modelach na karcie 16 GB Ollama przeładowywała d1 i warstwa 3 przekraczała 5 s (router przechodził wtedy na duży model, zgodnie z projektem); przy trzech modelach (mały, embeddingi, d1) bez przekroczeń.
+
 ## Pełne wyjście: etykiety v3 (wynik główny)
 
 ```

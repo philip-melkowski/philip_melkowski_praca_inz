@@ -55,18 +55,22 @@ async def main() -> None:
     p.add_argument("--n", type=int, default=300)
     p.add_argument("--seed", type=int, default=7)
     p.add_argument("--concurrency", type=int, default=8)
+    p.add_argument("--split", default="cal", choices=["cal", "test"], help="test: tylko pytania w dziedzinie (wpis 128)")
+    p.add_argument("--output", default="robustness_variants.jsonl")
     args = p.parse_args()
 
     def read(name: str) -> list[dict[str, Any]]:
         with (DATASETS_DIR / name).open(encoding="utf-8") as f:
             return [json.loads(line) for line in f if line.strip()]
 
-    cal = {r["id"] for r in read("labels.jsonl") if r["split"] == "cal"}
-    questions = [r for r in read("questions_v2_split.jsonl") if r["id"] in cal and r.get("embed_tokens", r["tokens"]) <= 1500]
+    pool = {r["id"] for r in read("labels.jsonl") if r["split"] == args.split}
+    questions = [
+        r for r in read("questions_v2_split.jsonl") if r["id"] in pool and not r["ood"] and r.get("embed_tokens", r["tokens"]) <= 1500
+    ]
     random.Random(args.seed).shuffle(questions)
     questions = questions[: args.n]
 
-    out = DATASETS_DIR / "robustness_variants.jsonl"
+    out = DATASETS_DIR / args.output
     done = set()
     if out.exists():
         done = {(r["id"], r["kind"]) for r in read(out.name)}

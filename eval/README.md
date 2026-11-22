@@ -55,6 +55,8 @@ Kolumna „Wpis” to **pierwszy** wpis `docs/DZIENNIK.md`, w którym skrypt wys
 | `gpu_latency.py` | czasy na GPU przez Ollamę: embedding, model decyzyjny (v1, pula v2; 1/4/8 naraz), generowanie małego | 118 |
 | `extra_generalization.py` | kNN na nowych źródłach (stary indeks) i CV ze starym train + `extra_train` | 118 |
 | `analysis_small_consistency.py` | sygnał po odpowiedzi: zgodność próbek małego i ocena jego odpowiedzi jako predyktor trudności (train, etykiety v3) | 125 |
+| `robustness_test.py` | C4 na teście: zmiana decyzji zamrożonego R0 po literówkach, parafrazach, synonimach (`robustness_generate.py --split test`) | 127 |
+| `export_layer3_final.py` | parametry warstwy 3 do testu: d1, v1, LR na train + `extra_train` (etykiety v3) | 126 |
 | `layer3_choose_final.py` | wybór zestawu warstwy 3 z d1 (reguła z wpisu 125) i jedno sprawdzenie na `extra_val` | 125, 126 |
 | `test_final.py` | jednorazowa ocena zamrożonego routera na teście wg `PROTOKOL_TESTU_2026-11-22.md` (sprawdzony wcześniej na zmyślonych etykietach) | 126–127 |
 | `export_layer3_params.py` | parametry warstwy 3 dla `RouterService` (plik `decider_path`): regresja na logit(kNN) i odpowiedziach modelu decyzyjnego, tylko train | 115 |
