@@ -53,7 +53,8 @@ Ollama na df-5070ti-03 (RTX 5070 Ti), wołana przez tunel SSH (czasy zawierają 
 ### 8. Szkice pracy (wpis 118)
 - Nowe: `praca/03_implementacja_df.md` (architektura w DF, przebieg decyzji, awarie, testy, opóźnienie), `praca/04_warstwa3.md` (eksperyment z modelami decyzyjnymi, tabele wyników, koszt czasu, wdrożenie, wnioski).
 - `praca/02_router.md`: dopisana sekcja 4a (szum etykiet, spadek jakości, progi Bonferroniego, nowe źródła) i poprawione zdanie o testach z prawdziwymi modelami.
-- Do napisania przez autora (lub w kolejnej sesji): wstęp, przegląd literatury, ewaluacja na teście, ograniczenia, wnioski, deklaracja użycia narzędzi AI.
+- `praca/00_wstep_i_literatura.md`: wstęp (problem, cel, propozycja tezy, układ) i przegląd literatury tylko ze źródeł opisanych w repozytorium; pozycje czytane w abstrakcie oznaczone [SPRAWDZIĆ], FrugalGPT i źródła dla Learn-then-Test do dopisania.
+- Do napisania: ewaluacja na teście (po otwarciu), ograniczenia, wnioski, deklaracja użycia narzędzi AI.
 
 ## W toku
 - Nic; dalsze kroki wymagają decyzji autora (lista niżej).
