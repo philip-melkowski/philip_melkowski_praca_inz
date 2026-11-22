@@ -18,9 +18,9 @@ DATASETS_DIR = Path(__file__).parent.parent / "data" / "datasets"
 
 async def run(args: argparse.Namespace) -> None:
     questions_set = json.loads(Path(args.questions).read_text(encoding="utf-8"))
-    with (DATASETS_DIR / "questions_v2_split.jsonl").open(encoding="utf-8") as f:
+    with (DATASETS_DIR / args.questions_file).open(encoding="utf-8") as f:
         rows = [json.loads(line) for line in f if line.strip()]
-    with (DATASETS_DIR / "labels.jsonl").open(encoding="utf-8") as f:
+    with (DATASETS_DIR / args.labels_file).open(encoding="utf-8") as f:
         labelled = {json.loads(line)["id"] for line in f if line.strip()}
     rows = [r for r in rows if r["split"] in args.splits and r["id"] in labelled]
     if args.limit:
@@ -69,6 +69,8 @@ def main() -> None:
     p.add_argument("--questions", default=str(Path(__file__).parent / "layer3_questions" / "v1.json"))
     p.add_argument("--output", default="", help="domyślnie data/datasets/layer3_systemone_<model>_<zestaw>.jsonl")
     p.add_argument("--splits", nargs="+", default=["train"])
+    p.add_argument("--questions-file", default="questions_v2_split.jsonl", help="plik pytań w data/datasets/")
+    p.add_argument("--labels-file", default="labels.jsonl", help="plik etykiet w data/datasets/ (tylko pytania z etykietą)")
     p.add_argument("--limit", type=int, default=0, help="losowa próbka (ziarno 42), 0 = wszystkie")
     p.add_argument("--key-env", default="DF_LOCAL_KEY", help="zmienna środowiskowa z kluczem")
     p.add_argument("--default-key", default="API_KEY", help="klucz, gdy zmienna nie jest ustawiona (lokalny DF)")

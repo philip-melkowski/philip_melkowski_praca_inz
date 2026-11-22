@@ -42,4 +42,4 @@ Cele główne na zbiorze test, w dziedzinie (766 pytań):
 2. AUROC routera ≥ 0,64.
 3. APGR routera > APGR „samo źródło” (dawne C1) – raportowany zawsze, także jako „nie wykazano”.
 
-**Sukces główny = cele 1 i 2.** C3–C6 bez zmian. Wymaga zgody promotora przed otwarciem testu.
+**Sukces główny = cele 1 i 2.** C3–C6 bez zmian. **Promotor się zgodził** (wg autora, 22.11, wpis 122).
