@@ -40,8 +40,8 @@ Statusy: **obowiązuje** / **zastąpiona** (przez kogo) / **odrzucona** / **prop
 | D16 | Warstwa 3 to model decyzyjny przez `POST /v1/systemone` (zamiast „małego modelu zero-shot z logprobs” z `KONCEPCJA.md`). Najpierw sam model, potem połączenie z kNN i heurystykami | A | obowiązuje jako kierunek eksperymentu (zmiana względem planu) | 79, 86 |
 | D17 | Go/no-go warstwy 3: **go, jako dodatkowy wariant** porównywany na teście; główny wynik pracy to warstwy 1 + 2. Model: d1 3B (wybór asystenta: prawie tak dobry jak Clef 27B, działa na GPU ok. 0,1 s, Clef dostępny tylko na df.test); wymaga dopisania d1 do katalogu modeli decyzyjnych DF | A (go, 22.11: „musi być jakaś 3 warstwa”), As (model) | obowiązuje | 103, 111, 118, 120 |
 | D15a | Wyjątek od D15: jedno potwierdzenie na cal dla puli v2 z Clefem, z planem porównań zapisanym przed wynikiem; dalsze użycie cal tylko za zgodą autora | A | obowiązuje (zgoda autora 27.10: „mamy dane walidacyjne… zrób to po Clefie”) | 112 |
-| D18 | Pula 34 pytań (`pool_v2.json`) + GBM zamiast v1 + LR (lepsze AUROC, czas ok. ×3,7) | As | **propozycja** | 112 |
-| D19 | Porównać w pracy warianty routera z kosztem (sam kNN, sam model decyzyjny, kNN + L3 w strefie, kNN + L3 zawsze); listę i kryterium ustalić przed otwarciem testu | As | **propozycja** (może zmienić strukturę pracy) | 112 |
+| D18 | Pula 34 pytań (`pool_v2.json`) + GBM zamiast v1 + LR (lepsze AUROC, czas ok. ×3,7) | As | **odrzucona** regułą z wpisu 125 (z d1: APGR B − A +0,002 [−0,003; +0,007], n.s.); obowiązuje v1 + LR | 112, 125, 126 |
+| D19 | Warianty porównywane na teście: R0 (warstwy 1 + 2, główny) i R1 (+ warstwa 3 w strefie), bez progu sukcesu dla R1; pozostałe warianty (sam model decyzyjny, L3 zawsze) tylko z walidacji (wpisy 111–113) | As (w ramach decyzji D17 autora) | obowiązuje, zapisane w protokole testu przed otwarciem | 112, 126 |
 
 ## Odrzucone lub sprawdzone bez przyjęcia (żeby nie zaczynać od nowa)
 

@@ -56,8 +56,19 @@ Ollama na df-5070ti-03 (RTX 5070 Ti), wołana przez tunel SSH (czasy zawierają 
 - `praca/00_wstep_i_literatura.md`: wstęp (problem, cel, propozycja tezy, układ) i przegląd literatury tylko ze źródeł opisanych w repozytorium; pozycje czytane w abstrakcie oznaczone [SPRAWDZIĆ], FrugalGPT i źródła dla Learn-then-Test do dopisania.
 - Do napisania: ewaluacja na teście (po otwarciu), ograniczenia, wnioski, deklaracja użycia narzędzi AI.
 
-## W toku
-- Nic; dalsze kroki wymagają decyzji autora (lista niżej).
+### 9. Druga część dnia: etykiety v3, zamrożenie, test (wpisy 123–128)
+- **Etykiety v3:** zmienione odpowiedzi (limit 4096) przeniesione zaszyfrowane przez git; komputer prywatny ocenił je i odesłał same liczby (`data/labels/`). Zmiana klasy u 96 z 4304 pytań (test 22).
+- **d1 w katalogu DF** (commit edf2a22, wypchnięty): DF podaje d1 pod `/v1/systemone`; sprawdzone na żywo.
+- **Wybór warstwy 3** regułą zapisaną przed wynikiem: v1 + regresja (pula 34 + GBM nie była istotnie lepsza w APGR). Na `extra_val`: +0,004 APGR (n.s.).
+- **Zamrożenie routera** (commit 767a0cd) i **jednorazowe otwarcie testu**: sukces główny spełniony (R0 − długość +0,055; AUROC 0,674); R0 − źródło nie wykazano; warstwa 3 na teście +0,022 APGR (istotne). C4 spełniony; C5 spełniony przy Ollamie obok DF (12,5 ms), niespełniony przez tunel (61 ms). Wszystko w `WYNIKI_TESTU_2026-11-22.md`.
+- **Analiza zgodności próbek małego:** ocena odpowiedzi małego modelu (kaskada) AUROC 0,81 wobec 0,67 kNN.
+- **Szkice:** ewaluacja (05), ograniczenia i wnioski (06), uzupełnienia w 01, 03, 04.
+- Decyzje D18 (odrzucona regułą) i D19 (R0 i R1 na teście) zaktualizowane w `DECYZJE.md`.
+
+## Zostaje dla autora
+- Przeczytać i zredagować szkice w `docs/praca/`; sprawdzić źródła [SPRAWDZIĆ].
+- Prezentacja (gdy zechcesz): wyniki testu i poprawiona tabela ryzyka ze slajdu 9.
+- Usunąć gałąź pokazową DF i stare klony DF (na polecenie).
 
 ## Do decyzji autora
 1. ~~Podział nowych pytań i dołożenie do indeksu~~: rozstrzygnięte (D21, wpis 119): `extra_train` do uczenia i indeksu, `extra_val` zamiast cal.

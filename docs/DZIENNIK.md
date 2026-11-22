@@ -894,3 +894,7 @@ Tylko train, CV po grupach (`eval/layer3_systemone_eval.py`, `eval/layer3_system
 
 ### 128. Szkice: ewaluacja na teście, ograniczenia i wnioski (2026-11-22)
 - Nowe `docs/praca/05_ewaluacja.md` (protokół, cele, tabela wyników v3/v2, warstwa 3, źródła, poza dziedziną, progi z gwarancją) i `docs/praca/06_ograniczenia_wnioski.md` (ograniczenia danych, metody i wdrożenia; wnioski jako propozycja asystenta; dalsze prace). W `04_warstwa3.md` sekcja 6 (decyzja i wynik na teście) zamiast [UZUPEŁNIĆ]; w `03_implementacja_df.md` wyniki C5 w tabeli opóźnień.
+
+### 129. Porządki po teście (2026-11-22)
+- `STATUS.md` przepisany na stan po teście (fakty, kroki, decyzje); `DECYZJE.md`: D18 odrzucona regułą z wpisu 125, D19 = R0 i R1 na teście; `praca/01_dane_i_etykiety.md` sekcja 6a (etykiety v3, nowe źródła, podział); notatka `PRACA_SAMODZIELNA_2026-11-22.md` uzupełniona o drugą część dnia.
+- Prezentacja celowo nieruszana (polecenie autora: „żadnych prezentacji na razie”).

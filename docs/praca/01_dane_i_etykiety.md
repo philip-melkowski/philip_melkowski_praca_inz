@@ -49,6 +49,12 @@ Dla każdego zapytania: Δ = Q_duży − średnia(Q_mały), gdzie Q jest jakośc
 - Powtarzalność: dla zapytań otwartych etykieta wyznaczona z jednej próbki małego modelu jest identyczna we wszystkich trzech próbkach w 74% zapytań (ze znaną odpowiedzią: 92%).
 - Porównanie z głosowaniami ludzi w Arenie (inne modele, inna epoka): zmierzone Δ słabo przewiduje wygraną silniejszego modelu (AUROC 0,55), co potwierdza, że etykiet nie należy przenosić między parami modeli.
 
+## 6a. Uzupełnienia pomiaru (dopisane 2026-11-22, wpisy 105–109, 118, 124)
+
+**Limit długości 4096.** Odpowiedzi ucięte przy 2048 tokenach (duży 6,7%, mały 1,7%) wygenerowano ponownie z limitem 4096 i oceniono ponownie (343 pytania). Klasa zmieniła się u 96 z 4304 pytań (train 60, cal 14, test 22); udział COMPLEX: train 38,7% → 39,9%, test 30,6% → 31,2%. Nadal uciętych przy 4096 jest 92 odpowiedzi; ocenione tak, jak są (limit jest częścią warunków działania). Te etykiety (v3) są podstawą wyników końcowych.
+
+**Dodatkowe dane.** 1500 zapytań z trzech nowych źródeł (po 500): Dolly (polecenia biurowe, CC BY-SA 3.0), CodeChat (rozmowy programistów, ODC-By), Arena 140k (CC BY 4.0 dla zapytań); usunięte powtórzenia ze starymi zapytaniami; ten sam protokół generowania i oceny (sędzia ocenił 1498, 2 zablokował). COMPLEX 49,9% (Arena 140k 56,7%, CodeChat 64,3%, Dolly 28,6%). Żadne nowe zapytanie nie jest prawie-duplikatem starego, więc zbiór testowy pozostał nienaruszony. Podział po grupach: 1051 do uczenia (`extra_train`, wchodzą do indeksu routera) i 449 jako świeży zbiór walidacyjny (`extra_val`) zamiast wielokrotnie używanego zbioru cal (D21).
+
 ## 7. Ograniczenia
 
 Jedna para modeli i jeden zbiór; duży model ma jedną próbkę na zapytanie; oceny otwartych zależą od jednego sędzia; ucięte odpowiedzi; TriviaQA bez licencji w metadanych; pomiar obejmuje tylko zapytania jednoturowe w języku angielskim.
