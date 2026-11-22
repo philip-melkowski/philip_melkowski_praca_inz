@@ -28,6 +28,7 @@ Statusy: **obowiązuje** / **zastąpiona** (przez kogo) / **odrzucona** / **prop
 | D13 | Warstwa 2: kNN k = 20, średnia ważona podobieństwem kosinusowym, domyślny próg 0,3; indeks train+cal w repozytorium (`data/router/router_index_train_cal.npz`) | As | obowiązuje | 49, 69 |
 | D14 | Awaria klasyfikatora lub małego modelu (404/408/429/5xx) → duży model | A | obowiązuje | 49 |
 | D14a | Wersja routera do testu końcowego: warstwy 1 + 2; warstwa 3 poza rdzeniem do decyzji go/no-go. Cele C1–C6: `CELE_PRZED_TESTEM.md` (**propozycja, niezatwierdzona**) | As | obowiązuje; C1–C6 czekają | 49 |
+| D20 | Progi certyfikowane (gwarancja odsetka błędów wśród pytań wysłanych do małego): metoda Bonferroniego na z góry ustalonej siatce udziałów 5%, 10%, …, 95% (każdy na poziomie 0,05/19), górna granica Clopper–Pearson; ścisłe Learn-then-Test od n = 50 odrzucone, bo nie daje żadnego progu (`eval/certified_threshold.py --method bonferroni`) | A | obowiązuje (decyzja autora 22.11) | 117 |
 
 ## Warstwa 3
 

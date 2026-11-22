@@ -74,13 +74,13 @@ async def call(client: httpx.AsyncClient, url: str, body: dict[str, Any], retrie
 
 async def run(args: argparse.Namespace) -> None:
     questions: dict[str, dict[str, Any]] = {}
-    with (DATASETS_DIR / "questions_v2_split.jsonl").open(encoding="utf-8") as f:
+    with (DATASETS_DIR / args.questions).open(encoding="utf-8") as f:
         for line in f:
             r = json.loads(line)
             if r["type"] == "open":
                 questions[r["id"]] = r
     by_id: dict[str, list[dict[str, Any]]] = {i: [] for i in questions}
-    with (DATASETS_DIR / "answers.jsonl").open(encoding="utf-8") as f:
+    with (DATASETS_DIR / args.answers).open(encoding="utf-8") as f:
         for line in f:
             a = json.loads(line)
             if a["id"] in by_id:
@@ -167,6 +167,8 @@ async def run(args: argparse.Namespace) -> None:
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--model", required=True)
+    p.add_argument("--questions", default="questions_v2_split.jsonl", help="plik pytań w data/datasets/")
+    p.add_argument("--answers", default="answers.jsonl", help="plik odpowiedzi w data/datasets/")
     p.add_argument("--output", default=str(DATASETS_DIR / "judge_open.jsonl"))
     p.add_argument("--limit", type=int, default=0)
     p.add_argument("--seed", type=int, default=1)

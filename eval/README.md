@@ -52,6 +52,8 @@ Kolumna „Wpis” to **pierwszy** wpis `docs/DZIENNIK.md`, w którym skrypt wys
 | `layer3_select.py` | wybór pytań (zachłanny, najlepsze pojedynczo; zagnieżdżona CV po grupach), LR na wszystkich, GBM, kilka modeli naraz, `--dump` wyników poza próbką (train) | 112 |
 | `layer3_cal_confirm.py` | jednorazowe potwierdzenie na cal: uczenie na train, v1 LR vs wszystkie LR vs GBM, router ze strefą | 112 |
 | `analysis_noise_quality.py` | szum etykiet (AUROC na pytaniach z wyraźnym Δ, korelacja z Δ) i spadek jakości przy 20/40/50/60% do małego; domyślnie tylko train, bootstrap po grupach | 117 |
+| `gpu_latency.py` | czasy na GPU przez Ollamę: embedding, model decyzyjny (v1, pula v2; 1/4/8 naraz), generowanie małego | 118 |
+| `extra_generalization.py` | kNN na nowych źródłach (stary indeks) i CV ze starym train + `extra_train` | 118 |
 | `export_layer3_params.py` | parametry warstwy 3 dla `RouterService` (plik `decider_path`): regresja na logit(kNN) i odpowiedziach modelu decyzyjnego, tylko train | 115 |
 | `layer3_llm_rate.py` | model językowy (np. duży Qwen przez DF) ocenia pytanie cyfrą 0–9 (różnica duży–mały, trudność); ścieżka odrzucona | 112 |
 

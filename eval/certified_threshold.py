@@ -95,5 +95,5 @@ def main(args: argparse.Namespace) -> None:
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
     p.add_argument("--splits", nargs="+", default=["train", "cal"], choices=["train", "cal"])
-    p.add_argument("--method", choices=["ltt", "bonferroni"], default="ltt", help="ltt: sekwencja stała od najmniejszego n; bonferroni: siatka GRID")
+    p.add_argument("--method", choices=["ltt", "bonferroni"], default="bonferroni", help="ltt: sekwencja stała od najmniejszego n; bonferroni: siatka GRID")
     main(p.parse_args())

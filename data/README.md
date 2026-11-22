@@ -23,6 +23,8 @@ Liczby w nawiasach `W…` to wpisy `docs/DZIENNIK.md`, w których skrypt powsta�
 |---|---|
 | `collect_extra.py` (W105) | 1500 dodatkowych pytań (Dolly, CodeChat, Arena 140k) → `questions_extra.jsonl` (`split = extra`) |
 | `run_extra_large.sh`, `run_extra_small.sh` (W105) | odpowiedzi dużego i małego na nowe pytania → `answers_extra.jsonl`, `answers_extra_small.jsonl` |
+| `merge_extra.py` (W118) | scalanie odpowiedzi na dodatkowe pytania (ponowne z 4096 zastępują ucięte) → `answers_extra_merged.jsonl` |
+| `prepare_extra.py` (W118) | embeddingi (sprawdzenie zgodności ze starymi), grupy, podział `extra_train` / `extra_val` / `excluded` → `embeddings_extra_nomic.npy`, `questions_extra_split.jsonl` |
 | `rerun_truncated.py` (W106) | ponowne generowanie uciętych z limitem 4096 → `answers_rerun4096.jsonl` (oryginały bez zmian), wznawialny |
 
 Pliki z tej tabeli i `layer3_systemone_*.jsonl` (wyniki warstwy 3) powstały na komputerze służbowym; po scaleniu z `answers.jsonl` (komputer prywatny) trzeba ocenić nowe i zmienione odpowiedzi sędzią (**płatne, tylko za zgodą autora na kwotę**) i policzyć etykiety.
@@ -33,6 +35,7 @@ Pliki z tej tabeli i `layer3_systemone_*.jsonl` (wyniki warstwy 3) powstały na 
 |---|---|---|
 | `questions_v2_split.jsonl` | **4313 pytań z podziałem i grupami; podstawowy plik pytań** | `make_split.py` |
 | `labels.jsonl` | **4304 etykiety (Δ, klasa, liczniki uciętych)** | `make_labels.py` |
+| `judge_open_extra.jsonl`, `labels_extra.jsonl` | ocena sędzią i 1498 etykiet dodatkowych pytań | `judge_open.py --questions/--answers`, `make_labels.py --questions/--judge/--gold ""` |
 | `embeddings_nomic.npy` | **embeddingi używane przez router** | `embed_questions.py` |
 | `answers.jsonl` | 17252 odpowiedzi (4313 × 3 małe + 1 duże) | `generate_answers.py` |
 | `scores_gold.jsonl`, `judge_open*.jsonl` | oceny automatyczne i sędziego | `score_gold.py`, `judge_open.py` |

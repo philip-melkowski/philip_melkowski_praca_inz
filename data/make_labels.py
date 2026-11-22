@@ -1,3 +1,4 @@
+import argparse
 import json
 import statistics as st
 from collections import defaultdict
@@ -7,7 +8,6 @@ from typing import Any
 DATASETS_DIR = Path(__file__).parent / "datasets"
 THRESHOLDS = (0.15, 0.25, 0.35)
 THRESHOLD = 0.25
-OUT = DATASETS_DIR / "labels.jsonl"
 
 
 def read(name: str) -> list[dict[str, Any]]:
@@ -15,16 +15,16 @@ def read(name: str) -> list[dict[str, Any]]:
         return [json.loads(line) for line in f if line.strip()]
 
 
-def main() -> None:
-    questions = {r["id"]: r for r in read("questions_v2_split.jsonl")}
+def main(args: argparse.Namespace) -> None:
+    questions = {r["id"]: r for r in read(args.questions)}
     quality: dict[str, dict[str, list[float]]] = defaultdict(lambda: {"large": [], "small": []})
     trunc: dict[str, dict[str, int]] = defaultdict(lambda: {"large": 0, "small": 0})
 
-    for s in read("scores_gold.jsonl"):
+    for s in read(args.gold) if args.gold else []:
         side = "large" if s["model"].startswith("Qwen/") else "small"
         quality[s["id"]][side].append(1.0 if s["correct"] is True else 0.0)
         trunc[s["id"]][side] += s["truncated"]
-    for j in read("judge_open.jsonl"):
+    for j in read(args.judge):
         for s in j["scores"]:
             side = "large" if s["model"].startswith("Qwen/") else "small"
             quality[j["id"]][side].append((s["score"] - 1) / 4)
@@ -51,13 +51,15 @@ def main() -> None:
                 "truncated_small": trunc[qid]["small"],
             }
         )
-    OUT.write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n", encoding="utf-8")
+    (DATASETS_DIR / args.out).write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n", encoding="utf-8")
 
     print(f"pytań z etykietą: {len(rows)} z {len(questions)}")
     header = f"{'grupa':14s} {'n':>5s}" + "".join(f" {'Δ>' + str(t):>9s}" for t in THRESHOLDS) + f" {'oba zawiodły':>13s} {'śr.Δ':>6s}"
     print(header)
 
     def line(name: str, v: list[dict[str, Any]]) -> None:
+        if not v:
+            return
         cols = "".join(f" {sum(r['delta'] > t for r in v) / len(v):9.1%}" for t in THRESHOLDS)
         print(f"{name:14s} {len(v):5d}{cols} {sum(r['both_failed'] for r in v):13d} {st.mean(r['delta'] for r in v):6.2f}")
 
@@ -66,10 +68,15 @@ def main() -> None:
     print()
     for typ in ("open", "gold"):
         line(typ, [r for r in rows if r["type"] == typ])
-    for sp in ("train", "cal", "test"):
+    for sp in sorted({r["split"] for r in rows}):
         line(sp, [r for r in rows if r["split"] == sp])
     line("RAZEM", rows)
 
 
 if __name__ == "__main__":
-    main()
+    p = argparse.ArgumentParser()
+    p.add_argument("--questions", default="questions_v2_split.jsonl")
+    p.add_argument("--judge", default="judge_open.jsonl")
+    p.add_argument("--gold", default="scores_gold.jsonl", help="pusty: bez pytań z odpowiedzią wzorcową")
+    p.add_argument("--out", default="labels.jsonl")
+    main(p.parse_args())
