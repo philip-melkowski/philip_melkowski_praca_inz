@@ -33,5 +33,12 @@ Punkty odniesienia: „sama długość” = log liczby tokenów pytania; „samo
 - Żadnej zmiany routera, progów, zestawu pytań ani metody po zobaczeniu wyników testu.
 - Żadnego wyboru między wariantami R0/R1 na podstawie testu (R0 jest główny niezależnie od wyniku).
 
-## 6. Zamrożone pliki
-Uzupełniane przy zamrożeniu (wpis 126), przed otwarciem.
+## 6. Zamrożone pliki (wpis 126, przed otwarciem testu)
+| Plik | SHA-256 | Zawartość |
+|---|---|---|
+| `data/router/router_index_final.npz` | `ee402377f4cd22c8b3ebbf5581f5e83649d581d9026f8db215e17c42f040327b` | 4060 wektorów: train 2151 + cal 859 + `extra_train` 1050, etykiety v3, COMPLEX 41,8% |
+| `data/router_l1.json` | `13e9e69fa952441532fbf032efd554a77807e17410437db30b0c8026003902f4` | heurystyki, próg 2 |
+| `data/router/router_l3_d1_final.json` | `d3135bec9b52e65c47d80f1847ad34fc2fd235fbf6263c4b731c50496f86d145` | warstwa 3: d1:3b, zestaw v1, regresja logistyczna (wariant A), strefa [0,20; 0,45), limit 5 s |
+| `eval/layer3_questions/v1.json` | `cd0a28c303dcc54dfcc39aede4ed2e15e0614f5cf9956179972220663068899d` | zestaw v1 (ten sam co 24.10) |
+
+Kod oceny: `eval/test_final.py` (stan z commita zamrożenia). Odpowiedzi d1 na pytania testowe zbierane po zamrożeniu (GPU, ten sam sprzęt co dla danych uczących).

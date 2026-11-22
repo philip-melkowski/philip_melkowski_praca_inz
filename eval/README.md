@@ -54,6 +54,7 @@ Kolumna „Wpis” to **pierwszy** wpis `docs/DZIENNIK.md`, w którym skrypt wys
 | `analysis_noise_quality.py` | szum etykiet (AUROC na pytaniach z wyraźnym Δ, korelacja z Δ) i spadek jakości przy 20/40/50/60% do małego; domyślnie tylko train, bootstrap po grupach | 117 |
 | `gpu_latency.py` | czasy na GPU przez Ollamę: embedding, model decyzyjny (v1, pula v2; 1/4/8 naraz), generowanie małego | 118 |
 | `extra_generalization.py` | kNN na nowych źródłach (stary indeks) i CV ze starym train + `extra_train` | 118 |
+| `analysis_small_consistency.py` | sygnał po odpowiedzi: zgodność próbek małego i ocena jego odpowiedzi jako predyktor trudności (train, etykiety v3) | 125 |
 | `layer3_choose_final.py` | wybór zestawu warstwy 3 z d1 (reguła z wpisu 125) i jedno sprawdzenie na `extra_val` | 125, 126 |
 | `test_final.py` | jednorazowa ocena zamrożonego routera na teście wg `PROTOKOL_TESTU_2026-11-22.md` (sprawdzony wcześniej na zmyślonych etykietach) | 126–127 |
 | `export_layer3_params.py` | parametry warstwy 3 dla `RouterService` (plik `decider_path`): regresja na logit(kNN) i odpowiedziach modelu decyzyjnego, tylko train | 115 |
