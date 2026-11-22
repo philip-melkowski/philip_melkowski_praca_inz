@@ -42,3 +42,6 @@ Praca inżynierska: `RouterService` w DeepFellow Infra (DF) wybiera dla każdego
 - W katalogu `inz/deepfellow-router/` leżą nieśledzone `deepfellow-infra/` (uszkodzony klon, `bad object HEAD`) i `do_przeniesienia/`; w `inz/deepfellow-infra` (poziom wyżej) jest inny, stary klon. Nie używać żadnego z nich.
 - Dokumenty o AUROC warstwy 1 podają 0,577 (wersja logistyczna) albo 0,555 (punktowa, ta w usłudze); lista znanych niespójności: `PRZEMYSLENIA_2026-10-25.md` pkt 9.
 - `docs/kontrola_ludzka/` (cztery pliki po ok. 3000 linii, klucze z ocenami sędziego): nie czytać w całości.
+- `data/judge_open.py --output` to ścieżka względem bieżącego katalogu (nie `data/datasets/`), a `data/finalize_v3.py` czyta z `data/datasets/`: podawaj `--output data/datasets/<plik>`. Skrypt jest wznawialny (pomija ocenione identyfikatory).
+- `*.jsonl` jest w `.gitignore`: pliki z liczbami w `data/labels/` dodawaj `git add -f` (tylko liczby, bez treści; repozytorium jest publiczne). Reguła uprawnień Claude Code może blokować płatne wywołania sędziego; autor uruchamia je wtedy sam przez `!`.
+- Przepisana historia GitHuba (29.10): po `git fetch` lokalna gałąź może być „ahead/behind”; sprawdź `git patch-id` commitów, potem `reset --hard origin/...` (zob. wpis 124).
