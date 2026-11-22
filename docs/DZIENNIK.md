@@ -881,3 +881,10 @@ Tylko train, CV po grupach (`eval/layer3_systemone_eval.py`, `eval/layer3_system
 - Jedno sprawdzenie A na `extra_val` (448 pytań, COMPLEX 47,1%, w strefie 51%; indeks train + cal + `extra_train`): kNN 0,661 / 0,588; router z warstwą 3 0,673 / 0,591; różnica AUROC +0,013 [−0,015; +0,038], APGR +0,004 [−0,010; +0,018] (nieistotne). Obraz jak wcześniej: warstwa 3 poprawia ranking, cały router zyskuje mało.
 - **Zamrożenie** (sumy w `PROTOKOL_TESTU_2026-11-22.md` pkt 6): indeks `router_index_final.npz` (train + cal + `extra_train`, 4060, etykiety v3; `export_index.py --labels`), warstwa 3 `router_l3_d1_final.json` (`eval/export_layer3_final.py`: wyraz wolny +0,155, kNN +0,528, najsilniejsze wagi single_correct −0,149, small_model_enough −0,111, constraints −0,099, code +0,098), heurystyki `router_l1.json`, zestaw v1 (SHA jak 24.10). Etykiety v3 przyszły przed zamrożeniem, więc router zbudowany na nich (zmiana w protokole przed otwarciem).
 - `analysis_small_consistency.py` i ten wpis commitowane przed jakimkolwiek wynikiem testu.
+
+### 127. Otwarcie zbioru test (raz) – wyniki (2026-11-22)
+- Po zamrożeniu (wpis 126, commit 767a0cd) zebrano odpowiedzi d1 na 1294 pytania testowe (GPU, 0 błędów, 101 s), potem `eval/test_final.py` raz na etykietach v3 i raz na v2. Pełne wyjście: `docs/WYNIKI_TESTU_2026-11-22.md`.
+- **Cele D22 (v3, w dziedzinie 766):** (1) R0 − długość APGR +0,055 [+0,019; +0,092] → tak; (2) AUROC 0,674 → tak; (3) R0 − źródło −0,003 [−0,032; +0,025] → nie wykazano; C3 CPT80 0,67 → tak. **Sukces główny spełniony** (v2: +0,075 i 0,667, też tak).
+- **Warstwa 3 na teście:** R1 − R0 APGR +0,022 [+0,010; +0,035] (v2 +0,021 [+0,008; +0,034]), AUROC +0,035; błąd krytyczny 4,6% wobec 5,6%. Na teście zysk jest istotny, wyraźniej niż w CV (+0,008) i na `extra_val` (+0,004, n.s.); poza dziedziną brak zysku.
+- Poza dziedziną (528): R0 AUROC 0,657 / APGR 0,649. Progi Bonferroniego: wszystkie cele błędu spełnione na teście. Według źródła: TriviaQA 0,408 i HumanEval 0,527 nadal najsłabsze.
+- Zostaje z protokołu: C4 (odporność na teście) i C5 (opóźnienie przez DF).

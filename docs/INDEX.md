@@ -30,6 +30,7 @@ Zacznij od `STATUS.md`. Reszty szukaj tu. Kolumna „Status”: **aktualny**, **
 |---|---|---|
 | `ROUTER_URUCHOMIENIE.md` | instalacja i uruchomienie usługi `router` w DF | aktualny (zdanie „nie uruchamiana z Qwenem” nieaktualne od wpisu 70) |
 | `ROUTER_TESTY_CURL.md` | zestaw żądań curl z oczekiwanymi i zaobserwowanymi wynikami, w tym pokaz warstwy 3 (pkt 6) | aktualny; testy E, G i pkt 6 niewykonane |
+| `WYNIKI_TESTU_2026-11-22.md` | wyniki jednorazowego otwarcia testu (v3 główne, v2 porównanie): cele D22, warstwa 3, poza dziedziną, progi | aktualny, nie zmieniać |
 | `PROTOKOL_TESTU_2026-11-22.md` | protokół jednorazowego otwarcia testu (router R0/R1, cele D22, miary, wersje etykiet), zapisany przed otwarciem | aktualny, nie zmieniać po otwarciu testu |
 | `PRACA_SAMODZIELNA_2026-11-22.md` | notatka z pracy bez nadzoru 22.11: co zrobione, wyniki, sprawy do decyzji | aktualny |
 | `pokaz_routera.html` | lokalna strona pokazu na seminarium: przyciski „Wyślij” do DF z gałęzi `demo/seminarium-dftest` (CORS), wyniki, czasy, odpowiedź | do pokazu 28.10; gałąź pokazowa do usunięcia po pokazie |
