@@ -34,3 +34,12 @@ Uwagi: L1 (reguły) nie wykazała zysku ponad L2 i w rdzeniu zostaje tylko, jeś
 4. **Warstwa 3:** jeśli go (D17), warianty i kryterium jakość–koszt wg D19 ustalić przed otwarciem; wyniki raportowane jako porównanie wariantów, bez progu sukcesu.
 5. **Etykiety testu:** przed otwarciem dokończyć ocenę ponownych odpowiedzi z limitem 4096 (66 pytań testowych z uciętą odpowiedzią dużego, wpis 106); wymaga `answers.jsonl` z komputera prywatnego. Bez tego etykiety części testu pochodzą z uciętych odpowiedzi.
 6. **C5 (opóźnienie):** dane do tej pory: narzut routera przez DF na Macu ok. 13 ms (wpis 70); na GPU embedding p50 36 ms przez tunel (wpis 118). Pomiar C5 zrobić na docelowym sprzęcie z routerem w DF.
+
+## Decyzja autora 2026-11-22 (`DECYZJE.md` D22, wpis 121)
+
+Cele główne na zbiorze test, w dziedzinie (766 pytań):
+1. APGR routera > APGR reguły „sama długość pytania” (dolna granica 95% CI różnicy parowanej > 0).
+2. AUROC routera ≥ 0,64.
+3. APGR routera > APGR „samo źródło” (dawne C1) – raportowany zawsze, także jako „nie wykazano”.
+
+**Sukces główny = cele 1 i 2.** C3–C6 bez zmian. Wymaga zgody promotora przed otwarciem testu.
