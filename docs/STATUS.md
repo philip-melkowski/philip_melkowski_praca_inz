@@ -1,6 +1,6 @@
 # STATUS: od tego pliku zaczyna każda sesja
 
-Stan na: **2026-11-22**. Ostatni wpis dziennika: **123**. Plik jest importowany z `CLAUDE.md`, więc musi być krótki (≤ 100 linii; sprawdza to `tools/check_docs.py`). Szczegóły są w dokumentach, do których odsyłam; **liczb nie kopiuj z innych miejsc bez sprawdzenia, tu jest ich tylko tyle, ile trzeba**.
+Stan na: **2026-11-22**. Ostatni wpis dziennika: **124**. Plik jest importowany z `CLAUDE.md`, więc musi być krótki (≤ 100 linii; sprawdza to `tools/check_docs.py`). Szczegóły są w dokumentach, do których odsyłam; **liczb nie kopiuj z innych miejsc bez sprawdzenia, tu jest ich tylko tyle, ile trzeba**.
 
 **Obowiązek na koniec sesji:** zaktualizuj ten plik (data, „w toku”, „następne kroki”, numer ostatniego wpisu), dopisz wpis do `DZIENNIK.md`, uruchom `uv run --python 3.13 tools/check_docs.py`. Commit i push tylko na prośbę autora.
 
@@ -16,17 +16,8 @@ Praca inżynierska: `RouterService` w DeepFellow Infra (DF) wybiera dla każdego
 - **Nowe dane (wpisy 105–109):** 1500 dodatkowych pytań (Dolly, CodeChat, Arena 140k): odpowiedzi dużego i małego (3 próbki) wygenerowane; ucięte przy 2048 powtórzone z limitem 4096; **decyzja: ocenić tak, jak są** (limit 4096 to część protokołu). **22.11 ocenione sędzią (1498/1500, ok. 4,5 USD), etykiety `labels_extra.jsonl` (COMPLEX 49,9%), podział-propozycja `extra_train` 1051 / `extra_val` 449** (wpis 118). Pliki tylko na komputerze służbowym (poza gitem).
 - **Dokumenty pracy:** szkice 5 części (`docs/praca/`: wstęp i literatura, dane, router, implementacja w DF, warstwa 3; z [UZUPEŁNIĆ]/[SPRAWDZIĆ]); brak ewaluacji na teście, ograniczeń i wniosków. Prezentacja: plik Keynote autora, wersja zaktualizowana 27.10 o warstwę 3 i stan prac (15 slajdów, poza repozytorium, wpis 114; zob. `INDEX.md`).
 
-## ZADANIE DLA KOMPUTERA PRYWATNEGO (od 2026-11-22, wpis 123)
-Autor uruchomi je zdaniem „zrób zadanie dla komputera prywatnego ze STATUS, hasło: …”. Hasło podaje autor (nie ma go w repozytorium). Zgoda autora na sędziego: do 20 USD łącznie (22.11), z czego ok. 4,5 USD zużyte. Kolejno, w repozytorium (`inz/deepfellow-router`):
-1. `git pull` na gałęzi `stage/2-classifier`. Jeśli nie przejdzie (29.10 historia na GitHubie została przepisana: zmiana autora commitów, treść ta sama): sprawdzić `git log origin/stage/2-classifier..HEAD`; jeśli lokalnie nie ma commitów, których brak na GitHubie (porównać po treści), `git reset --hard origin/stage/2-classifier`, w przeciwnym razie zapytać autora. Odszyfrować: `openssl enc -d -aes-256-cbc -pbkdf2 -in data/transfer/answers_rerun4096_main.jsonl.enc -out data/datasets/answers_rerun4096_main.jsonl -pass pass:<hasło>` (511 ponownych odpowiedzi z limitem 4096 na stare pytania).
-2. `uv run --python 3.13 data/merge_main_reruns.py` → `answers_v3.jsonl`, `changed_ids.txt` (oryginał `answers.jsonl` bez zmian; sprawdzić komunikat o niezgodnych liczbach).
-3. `uv run --python 3.13 data/score_gold.py --answers answers_v3.jsonl --output scores_gold_v3.jsonl`.
-4. `uv run --python 3.13 data/judge_open.py --model gemini-3.8-flash --questions questions_v2_split.jsonl --answers answers_v3.jsonl --only-ids changed_ids.txt --output judge_open_v3_changed.jsonl --concurrency 8` (najpierw `--limit 3` na próbę; dociągnąć błędy drugim uruchomieniem).
-5. `uv run --python 3.13 data/finalize_v3.py combine`, potem `uv run --python 3.13 data/make_labels.py --gold scores_gold_v3.jsonl --judge judge_open_v3.jsonl --out labels_v3.jsonl`, potem `uv run --python 3.13 data/finalize_v3.py export`.
-6. Commit i push **tylko** `data/labels/` (same liczby, bez treści; repozytorium jest publiczne) oraz wpisu w dzienniku (koszt, liczby zmian etykiet, w tym w teście). Plików z `data/datasets/` nie dodawać. Potem usunąć to zadanie ze STATUS.
-
 ## W toku / następne kroki (propozycje asystenta, nie decyzje; kolejność do ustalenia z autorem)
-1. Nowe pytania ocenione i z etykietami (wpis 118). Zostaje: ocena zmienionych odpowiedzi pomiaru głównego (511 ponownych z 4096) na komputerze prywatnym; decyzja o roli `extra_val` i o dołożeniu nowych pytań do indeksu. Bieżąca notatka: `PRACA_SAMODZIELNA_2026-11-22.md`.
+1. Nowe pytania ocenione i z etykietami (wpis 118). **Etykiety v3 gotowe (wpis 124):** po ponownej ocenie 343 pytań z odpowiedziami przy limicie 4096 zmieniło się 96 klas z 4304 (train 60, cal 14, test 22); same liczby w `data/labels/` (`labels_v3.jsonl`, `sample_scores_v3.jsonl`). Zostaje: decyzja o roli `extra_val` i o dołożeniu nowych pytań do indeksu; indeks i `labels_v3` do przeliczenia na komputerze, na którym działa router. Bieżąca notatka: `PRACA_SAMODZIELNA_2026-11-22.md`.
 2. Warstwa 3: czas d1 na GPU zmierzony (8 pytań p50 0,11 s, 34 pytania 0,36 s; wpis 118), Clef na GPU niesprawdzony; d1 nie jest w katalogu modeli decyzyjnych DF; ustalić przed testem listę porównywanych wariantów routera (sam kNN / sam model decyzyjny / kNN + L3 w strefie / kNN + L3 zawsze) i kryterium jakość–koszt (D19); zdecydować go/no-go.
 3. Analizy: szum etykiet i spadek jakości zrobione na train (wpis 117); zostaje zgodność 3 próbek małego (oceny próbek na komputerze prywatnym).
 4. Benchmark systemowy na GPU (opóźnienie, przepustowość): potrzebny dostęp od autora (tunel lub mesh).
