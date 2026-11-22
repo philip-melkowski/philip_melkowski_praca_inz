@@ -40,7 +40,7 @@ Zacznij od `STATUS.md`. Reszty szukaj tu. Kolumna „Status”: **aktualny**, **
 
 | Plik | Do czego | Status |
 |---|---|---|
-| `praca/00_wstep_i_literatura.md`, `praca/01_dane_i_etykiety.md`, `praca/02_router.md`, `praca/03_implementacja_df.md`, `praca/04_warstwa3.md` | robocze szkice rozdziałów (z [UZUPEŁNIĆ] i [SPRAWDZIĆ]); 00, 03, 04 dopisane 22.11 | aktualny, do redakcji przez autora |
+| `praca/00_wstep_i_literatura.md`, `praca/01_dane_i_etykiety.md`, `praca/02_router.md`, `praca/03_implementacja_df.md`, `praca/04_warstwa3.md`, `praca/05_ewaluacja.md`, `praca/06_ograniczenia_wnioski.md` | robocze szkice rozdziałów (z [UZUPEŁNIĆ] i [SPRAWDZIĆ]); 00, 03–06 dopisane 22.11 | aktualny, do redakcji przez autora |
 | `PREZENTACJA_zarys.md` | zarys 12 slajdów | historyczny |
 | `prezentacja_postepy.pptx`, `prezentacja_notatki.js` | stara kopia prezentacji (16 slajdów) | zastąpiony: aktualna jest prezentacja Keynote autora (15 slajdów od 27.10, poza repozytorium, wpis 114); nie przebudowywać |
 | `references/routellm_notes.md`, `references/routellm_notes.pdf` | notatki z RouteLLM (ok. 470 linii; czytać fragmentami) | aktualny |

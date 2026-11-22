@@ -76,4 +76,8 @@ Warstwa 3 jest w `RouterService` jako opcja (`decider_path`): zestaw v1 i regres
 - Tani model (d1 3B) jest prawie tak dobry jak Clef 27B i na GPU kosztuje ok. 0,1 s.
 - Ograniczenia: Clef na df.test zmienił wersję (`clef:27b`, wpis 117), więc wyniki z Clefem dotyczą wersji q4_K_M; cal był użyty kilkakrotnie, więc liczby z cal są lekko optymistyczne; d1 wymaga wpisu w katalogu modeli decyzyjnych DF.
 
-**[UZUPEŁNIĆ: decyzja go/no-go (D17), wybór modelu i zestawu (D18), lista porównywanych wariantów (D19) i wynik na zbiorze testowym, jeśli warstwa 3 wejdzie do porównania.]**
+## 6. Decyzja i wynik na teście
+
+- Decyzja (D17, 22.11): warstwa 3 wchodzi jako wariant dodatkowy z modelem d1 3B; główny wynik pracy to warstwy 1 + 2.
+- Zestaw wybrany regułą zapisaną przed wynikiem (wpis 125): pula 34 pytań z GBM nie była istotnie lepsza w APGR od zestawu v1 z regresją (+0,002 [−0,003; +0,007]), więc wybrano tańszy v1 (0,11 s wobec 0,36 s na GPU). Sprawdzenie na świeżym `extra_val`: +0,004 APGR (nieistotne).
+- **Test (rozdział o ewaluacji):** R1 − R0 APGR +0,022 [+0,010; +0,035], AUROC +0,035, mniej poważnych błędów (4,6% wobec 5,6%); poza dziedziną bez zysku. Czas decyzji z warstwą 3 przez DF: p50 ok. 195 ms dla zapytań w strefie (d1 na GPU przez tunel).

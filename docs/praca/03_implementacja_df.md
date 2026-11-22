@@ -45,7 +45,11 @@ Usługę instaluje administrator przez API lub panel DF. Formularz: mały i duż
 | GPU: model decyzyjny d1 3B, 8 pytań | p50 110 ms, p90 148 ms; ok. 12,5 żądań/s przy 4 naraz | wpis 118 |
 | GPU: mały model `qwen3:8b` | ok. 112 tokenów/s | wpis 118 |
 
-Wniosek: warstwy 1–2 dodają kilkadziesiąt milisekund, czyli mało wobec generowania odpowiedzi (sekundy). Warstwa 3 kosztuje ok. 0,1 s na GPU przy 8 pytaniach, ale tylko dla zapytań w strefie niepewności (ok. połowa ruchu). **[UZUPEŁNIĆ: benchmark całego routera w DF na docelowym sprzęcie: p50/p90 opóźnienia i przepustowość wobec „zawsze duży”.]**
+| Decyzja R0 przez DF, DF i Ollama na jednym komputerze (zamrożony router, 200 zapytań) | p50 12,5 ms, p90 18,5 ms | wpis 127 |
+| Decyzja R0 przez DF, embeddingi na zdalnym GPU (tunel SSH/VPN) | p50 61,2 ms, p90 74,6 ms | wpis 127 |
+| Decyzja R1 (z warstwą 3, d1 na GPU przez tunel) | p50 74,4 ms; zapytania w strefie p50 194,5 ms | wpis 127 |
+
+Wniosek: warstwy 1–2 dodają kilkanaście milisekund, gdy model embeddingów działa przy DF, czyli mało wobec generowania odpowiedzi (sekundy); przez sieć do zdalnego GPU ok. 60 ms. Warstwa 3 kosztuje ok. 0,13 s dla zapytań w strefie niepewności (43% ruchu). Na karcie 16 GB Ollama trzyma domyślnie trzy modele; przy czterech warstwa 3 była przeładowywana i przekraczała limit czasu (router przechodził wtedy na duży model). **[UZUPEŁNIĆ: przepustowość całego systemu wobec „zawsze duży” w rzeczywistym wdrożeniu.]**
 
 ## 6. Ograniczenia wdrożenia
 
