@@ -61,7 +61,7 @@ Ollama na df-5070ti-03 (RTX 5070 Ti), wołana przez tunel SSH (czasy zawierają 
 
 ## Do decyzji autora
 1. ~~Podział nowych pytań i dołożenie do indeksu~~: rozstrzygnięte (D21, wpis 119): `extra_train` do uczenia i indeksu, `extra_val` zamiast cal.
-3. Warstwa 3: go/no-go i model (d1 3B na GPU: 0,11 s dla 8 pytań; Clef tylko na df.test). Jeśli d1: dopisać go do katalogu modeli decyzyjnych DF.
+3. ~~Warstwa 3~~: rozstrzygnięte (D17, wpis 120): go jako dodatkowy wariant, model d1 3B.
 4. Moc C1 ok. 40–55%: czy miarą główną ma być różnica router − „sama długość” (moc ok. 99%).
 5. Push gałęzi DF (`feat/router-service` z poprawką słów kluczowych): wymaga tokenu GitHuba.
 6. Ponowna ocena zmienionych odpowiedzi pomiaru głównego: na komputerze prywatnym.

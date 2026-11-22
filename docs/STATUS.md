@@ -1,6 +1,6 @@
 # STATUS: od tego pliku zaczyna każda sesja
 
-Stan na: **2026-11-22**. Ostatni wpis dziennika: **119**. Plik jest importowany z `CLAUDE.md`, więc musi być krótki (≤ 100 linii; sprawdza to `tools/check_docs.py`). Szczegóły są w dokumentach, do których odsyłam; **liczb nie kopiuj z innych miejsc bez sprawdzenia, tu jest ich tylko tyle, ile trzeba**.
+Stan na: **2026-11-22**. Ostatni wpis dziennika: **120**. Plik jest importowany z `CLAUDE.md`, więc musi być krótki (≤ 100 linii; sprawdza to `tools/check_docs.py`). Szczegóły są w dokumentach, do których odsyłam; **liczb nie kopiuj z innych miejsc bez sprawdzenia, tu jest ich tylko tyle, ile trzeba**.
 
 **Obowiązek na koniec sesji:** zaktualizuj ten plik (data, „w toku”, „następne kroki”, numer ostatniego wpisu), dopisz wpis do `DZIENNIK.md`, uruchom `uv run --python 3.13 tools/check_docs.py`. Commit i push tylko na prośbę autora.
 
