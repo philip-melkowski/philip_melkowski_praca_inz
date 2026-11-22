@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pokaz routera DF</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Lokalna strona pokazu: otwierana z pliku, wysyła zapytania do DF na gałęzi demo/seminarium-dftest (CORS włączony). */
+:root {
+  --bg: #f6f7f9; --surface: #ffffff; --fg: #1b2230; --muted: #5b6577; --line: #dde1e8; --code-bg: #eef1f5;
+  --accent: #2f5bd3; --l1: #6a4bc4; --l2: #0f8577; --l3: #b56a00; --small: #0f8577; --large: #b03a48; --err: #b03a48;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #12151b; --surface: #1a1f28; --fg: #e4e8ef; --muted: #9aa4b5; --line: #2c3340; --code-bg: #0e1116;
+    --accent: #7d9cff; --l1: #a68cf0; --l2: #3cc2b0; --l3: #f0a73a; --small: #3cc2b0; --large: #f07a88; --err: #f07a88;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.5; padding: 28px 16px 60px; }
+.wrap { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+h1, h2, h3 { margin: 0; line-height: 1.25; text-wrap: balance; }
+h1 { font-size: 26px; font-weight: 600; }
+h2 { font-size: 18px; font-weight: 600; }
+h3 { font-size: 15px; font-weight: 600; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+.settings { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 14px; }
+.settings label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+input, textarea { font: 14px var(--font-mono); color: var(--fg); background: var(--code-bg); border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px; }
+input:focus-visible, textarea:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+#base { width: 230px; } #key { width: 140px; } #maxTokens { width: 80px; }
+button { font: 500 14px var(--font-body); border-radius: 4px; padding: 7px 14px; cursor: pointer; border: 1px solid var(--accent); background: var(--accent); color: #fff; }
+button.ghost { background: transparent; color: var(--accent); }
+button:disabled { opacity: 0.55; cursor: wait; }
+.health { font-size: 13px; }
+.cards { display: flex; flex-direction: column; gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--layer, var(--line)); border-radius: 6px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.card[data-layer="l1"] { --layer: var(--l1); } .card[data-layer="l2"] { --layer: var(--l2); } .card[data-layer="l3"] { --layer: var(--l3); }
+.head { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: baseline; }
+.chip { font: 500 11px var(--font-mono); text-transform: uppercase; letter-spacing: 0.04em; color: var(--layer, var(--muted)); border: 1px solid var(--layer, var(--muted)); border-radius: 999px; padding: 1px 8px; }
+textarea { width: 100%; min-height: 44px; resize: vertical; font-size: 13.5px; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.expect { font-size: 13px; color: var(--muted); }
+.result { display: none; flex-direction: column; gap: 8px; border-top: 1px dashed var(--line); padding-top: 10px; }
+.result.show { display: flex; }
+.facts { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+.facts b { font-weight: 600; }
+.to-small { color: var(--small); } .to-large { color: var(--large); }
+.answer { white-space: pre-wrap; font-size: 14px; background: var(--code-bg); border-radius: 4px; padding: 10px 12px; max-height: 260px; overflow: auto; }
+.error { color: var(--err); font-size: 14px; white-space: pre-wrap; }
+details { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; }
+summary { cursor: pointer; font-weight: 600; }
+pre { margin: 10px 0 0; background: var(--code-bg); border: 1px solid var(--line); border-radius: 4px; padding: 10px 12px; font: 12.5px/1.6 var(--font-mono); overflow-x: auto; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:8px">
+    <h1>Pokaz routera w DeepFellow</h1>
+    <p class="muted">Kliknij „Wyślij” przy zapytaniu. Strona pokazuje, który model odpowiedział, która warstwa zdecydowała, wyniki kNN i modelu decyzyjnego, czas decyzji, czas całego zapytania i odpowiedź.</p>
+  </header>
+
+  <div class="settings">
+    <label>Adres DF <input id="base" value="http://localhost:8087"></label>
+    <label>Klucz <input id="key" value="pokaz-key"></label>
+    <label>Maks. tokenów <input id="maxTokens" type="number" value="200" min="1"></label>
+    <button class="ghost" id="check" type="button">Sprawdź połączenie</button>
+    <button id="all" type="button">Wyślij wszystkie po kolei</button>
+    <span class="health muted" id="health"></span>
+  </div>
+
+  <div class="cards" id="cards"></div>
+
+  <details>
+    <summary>Uruchomienie DF i instalacja (przed pokazem)</summary>
+    <p class="muted" style="margin-top:8px">Pierwszy terminal: start DF na gałęzi pokazowej. Drugi: instalacja Ollamy i routera z warstwą 3 (Clef). Potrzebny VPN do df.test i działająca Ollama z <code>qwen3:8b</code> i <code>nomic-embed-text</code>.</p>
+<pre>cd ~/inz/deepfellow-infra
+git switch demo/seminarium-dftest
+mkdir -p /tmp/df-pokaz
+eval "$(grep '^export API_KEY=' ~/.zshrc)"
+DF_TEST_API_KEY="$API_KEY" DF_STORAGE_DIR=/tmp/df-pokaz \
+DF_INFRA_ADMIN_API_KEY=pokaz-admin DF_INFRA_API_KEY=pokaz-key \
+uv run uvicorn server.main:app --host localhost --port 8087 --log-level info</pre>
+<pre>B=http://localhost:8087; A="Authorization: Bearer pokaz-admin"; R=$HOME/inz/philip_melkowski_praca_inz
+curl -s -X POST $B/admin/services/ollama-external -H "$A" -H "Content-Type: application/json" \
+  -d '{"spec":{"url":"http://localhost:11434"}}'; echo
+curl -s -X POST $B/admin/services/router -H "$A" -H "Content-Type: application/json" -d "{\"spec\":{
+  \"small_model\":\"qwen3:8b\",\"large_model\":\"Qwen/Qwen3.8-27B-FP8\",
+  \"index_path\":\"$R/data/router/router_index_train_cal.npz\",\"embedding_model\":\"nomic-embed-text\",
+  \"k\":\"20\",\"threshold\":\"0.3\",\"heuristics_path\":\"$R/data/router_l1.json\",\"heuristic_threshold\":\"2\",
+  \"decider_path\":\"$R/data/router/router_l3_clef_v1.json\"}}"; echo
+curl -s -X POST "$B/admin/services/router/models/_?model_id=router" -H "$A" -H "Content-Type: application/json" \
+  -d '{"spec":{}}'; echo</pre>
+    <p class="muted" style="margin-top:8px">Przed wejściem na salę wyślij raz zapytania 2 i 4: pierwsze wywołanie ładuje modele do pamięci.</p>
+  </details>
+</div>
+
+<script>
+const PRESETS = [
+  { layer: "l1", chip: "warstwa 1 · heurystyki", title: "Frazy trudności idą od razu do dużego",
+    prompt: "Analyze and compare these two designs, then evaluate the trade-offs step by step.",
+    expect: "27.10: Qwen 27B, heuristics, decyzja 0,1 ms" },
+  { layer: "l2", chip: "warstwa 2 · kNN", title: "Proste pytanie idzie do małego",
+    prompt: "What is the capital of France?",
+    expect: "27.10: qwen3:8b, knn, wynik 0,1947, decyzja ok. 24 ms" },
+  { layer: "l2", chip: "warstwa 2 · kNN", title: "Zadanie twórcze idzie do dużego",
+    prompt: "Write a short scene from a novel where a beautiful, wicked lamia coils around an unfortunate, quippy human adventurer.",
+    expect: "27.10: Qwen 27B, knn, wynik 0,6566, decyzja ok. 18 ms" },
+  { layer: "l3", chip: "warstwa 3 · model decyzyjny", title: "kNN dałby małego, warstwa 3 wybiera dużego",
+    prompt: "How many fish are there on earth? Please detail the way that led you to calculate the result.",
+    expect: "27.10: Qwen 27B, decider, kNN 0,2631 → warstwa 3 0,5242, decyzja ok. 337 ms" },
+  { layer: "l3", chip: "warstwa 3 · model decyzyjny", title: "kNN dałby dużego, warstwa 3 wybiera małego",
+    prompt: "What is the speed of light in water? Give the answer in kilometers per second.",
+    expect: "27.10: qwen3:8b, decider, kNN 0,3924 → warstwa 3 0,2763, decyzja ok. 335 ms" },
+  { layer: "", chip: "własne pytanie", title: "Dowolne zapytanie z sali",
+    prompt: "", expect: "Wpisz dowolne pytanie i wyślij." },
+];
+
+const LAYER_NAMES = { heuristics: "warstwa 1 (heurystyki)", knn: "warstwa 2 (kNN)", decider: "warstwa 3 (model decyzyjny)", fallback: "awaria → duży model" };
+const $ = (id) => document.getElementById(id);
+const fmt = (v, digits) => v === null || v === "" ? null : Number(v).toFixed(digits).replace(".", ",");
+
+function el(tag, attrs = {}, ...children) {
+  const node = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") node.className = v; else if (k === "text") node.textContent = v; else node.setAttribute(k, v);
+  }
+  for (const c of children) if (c) node.append(c);
+  return node;
+}
+
+function buildCard(p, i) {
+  const ta = el("textarea", { id: `prompt-${i}`, rows: "2" }); ta.value = p.prompt;
+  if (!p.prompt) ta.placeholder = "Wpisz pytanie po angielsku…";
+  const btn = el("button", { type: "button", id: `send-${i}`, text: "Wyślij" });
+  const result = el("div", { class: "result", id: `result-${i}` });
+  const card = el("article", { class: "card", "data-layer": p.layer },
+    el("div", { class: "head" }, el("span", { class: "chip", text: p.chip }), el("h3", { text: `${i + 1}. ${p.title}` })),
+    ta,
+    el("div", { class: "row" }, btn, el("span", { class: "expect", text: p.expect })),
+    result);
+  btn.addEventListener("click", () => send(i));
+  return card;
+}
+
+async function send(i) {
+  const btn = $(`send-${i}`), result = $(`result-${i}`), prompt = $(`prompt-${i}`).value.trim();
+  if (!prompt) { result.replaceChildren(el("p", { class: "error", text: "Wpisz najpierw pytanie." })); result.classList.add("show"); return; }
+  btn.disabled = true; btn.textContent = "Wysyłam…";
+  result.replaceChildren(el("p", { class: "muted", text: "Czekam na odpowiedź…" })); result.classList.add("show");
+  const t0 = performance.now();
+  try {
+    const res = await fetch(`${$("base").value.replace(/\/$/, "")}/v1/chat/completions`, {
+      method: "POST",
+      headers: { "Authorization": `Bearer ${$("key").value}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ model: "router", messages: [{ role: "user", content: prompt }], max_tokens: Number($("maxTokens").value) || 200, reasoning_effort: "none" }),
+    });
+    const text = await res.text();
+    const total = (performance.now() - t0) / 1000;
+    const h = (n) => res.headers.get(n);
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.slice(0, 400)}`);
+    const data = JSON.parse(text);
+    const model = h("X-Router-Model") || data.model || "?";
+    const isSmall = /8b/i.test(model);
+    const facts = el("div", { class: "facts" },
+      el("span", {}, "model: ", el("b", { class: isSmall ? "to-small" : "to-large", text: model })),
+      el("span", { text: `decyzja: ${LAYER_NAMES[h("X-Router-Layer")] || h("X-Router-Layer") || "?"}` }),
+      h("X-Router-Score") ? el("span", { text: `wynik kNN: ${fmt(h("X-Router-Score"), 3)}` }) : null,
+      h("X-Router-Decider-Score") ? el("span", { text: `wynik warstwy 3: ${fmt(h("X-Router-Decider-Score"), 3)}` }) : null,
+      h("X-Router-Decision-Ms") ? el("span", { text: `czas decyzji: ${fmt(h("X-Router-Decision-Ms"), 1)} ms` }) : null,
+      el("span", { text: `czas całego zapytania: ${fmt(total, 2)} s` }));
+    const answer = data.choices?.[0]?.message?.content ?? "(brak treści odpowiedzi)";
+    result.replaceChildren(facts, el("div", { class: "answer", text: answer }));
+  } catch (e) {
+    const msg = e instanceof TypeError
+      ? "Nie udało się połączyć z DF. Sprawdź, czy DF działa pod podanym adresem i czy to gałąź demo/seminarium-dftest (z CORS)."
+      : String(e.message || e);
+    result.replaceChildren(el("p", { class: "error", text: msg }));
+  } finally {
+    btn.disabled = false; btn.textContent = "Wyślij";
+  }
+}
+
+async function checkHealth() {
+  const out = $("health"); out.textContent = "Sprawdzam…";
+  try {
+    const res = await fetch(`${$("base").value.replace(/\/$/, "")}/v1/models`, { headers: { "Authorization": `Bearer ${$("key").value}` } });
+    if (!res.ok) { out.textContent = `DF odpowiada, ale HTTP ${res.status} (zły klucz?)`; return; }
+    const ids = (await res.json()).data.map((m) => m.id);
+    const need = ["router", "qwen3:8b"].filter((m) => !ids.includes(m));
+    out.textContent = need.length ? `Połączono, brakuje: ${need.join(", ")}` : "Połączono, router gotowy";
+  } catch { out.textContent = "Brak połączenia z DF"; }
+}
+
+PRESETS.forEach((p, i) => $("cards").append(buildCard(p, i)));
+$("check").addEventListener("click", checkHealth);
+$("all").addEventListener("click", async () => {
+  $("all").disabled = true;
+  for (let i = 0; i < PRESETS.length - 1; i++) await send(i);
+  $("all").disabled = false;
+});
+</script>
+</body>
+</html>

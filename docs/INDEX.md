@@ -30,6 +30,7 @@ Zacznij od `STATUS.md`. Reszty szukaj tu. Kolumna „Status”: **aktualny**, **
 |---|---|---|
 | `ROUTER_URUCHOMIENIE.md` | instalacja i uruchomienie usługi `router` w DF | aktualny (zdanie „nie uruchamiana z Qwenem” nieaktualne od wpisu 70) |
 | `ROUTER_TESTY_CURL.md` | zestaw żądań curl z oczekiwanymi i zaobserwowanymi wynikami, w tym pokaz warstwy 3 (pkt 6) | aktualny; testy E, G i pkt 6 niewykonane |
+| `pokaz_routera.html` | lokalna strona pokazu na seminarium: przyciski „Wyślij” do DF z gałęzi `demo/seminarium-dftest` (CORS), wyniki, czasy, odpowiedź | do pokazu 28.10; gałąź pokazowa do usunięcia po pokazie |
 | `START_KOMPUTER_SLUZBOWY.md` | notatka startowa z 24.10 dla komputera służbowego | zastąpiony przez `CLAUDE.md` i `STATUS.md` |
 
 ## Praca i prezentacja
