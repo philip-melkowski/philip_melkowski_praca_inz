@@ -15,11 +15,11 @@ Kolumna „Wpis” to **pierwszy** wpis `docs/DZIENNIK.md`, w którym skrypt wys
 | Skrypt | Do czego | Wpis |
 |---|---|---|
 | `router_layers.py`, `router_extra.py` | ablacja warstw 1 i 2, testy parowane, klastry, górna granica | 19, 20 |
-| `router_cv.py` | walidacja krzyżowa po grupach na train+cal (3010 pytań): główne liczby routera | 24 |
+| `router_cv.py` | walidacja krzyżowa po grupach na train+cal (3010 pytań): główne liczby routera; od wpisu 117 bootstrap po grupach (`--boot-by`), wybór zbiorów `--splits` | 24, 117 |
 | `router_models.py` | przegląd klasyfikatorów na embeddingach | 28 |
 | `embedder_compare.py`, `embed_latency.py` | porównanie embedderów i ich opóźnienia | 30 |
 | `knn_k_sweep.py`, `knn_weighting.py` | wpływ k i ważenia w kNN | 53, 65 |
-| `certified_threshold.py` | próg certyfikowany (Clopper–Pearson); **znany błąd w `pick()`** (wpis 97) | 54 |
+| `certified_threshold.py` | próg certyfikowany (Clopper–Pearson); `pick()` poprawiony na Learn-then-Test, wariant `--method bonferroni` (siatka udziałów), `--splits` | 54, 117 |
 | `threshold_table.py` | tabela progów: udział dużego, jakość | — |
 | `learning_curve.py` | krzywa uczenia kNN | 41 |
 | `error_analysis.py`, `category_analysis.py` | błąd krytyczny i kosztowy; analiza wg kategorii (kategorie tylko do analizy) | 34, 35 |
@@ -51,6 +51,7 @@ Kolumna „Wpis” to **pierwszy** wpis `docs/DZIENNIK.md`, w którym skrypt wys
 | `layer3_questions/pool_v2.json`, `layer3_questions/pool_v3_extra.json` | pula 34 pytań (v1 + 26 nowych) i 20 pytań o formę i intencję; v1 bez zmian | 112 |
 | `layer3_select.py` | wybór pytań (zachłanny, najlepsze pojedynczo; zagnieżdżona CV po grupach), LR na wszystkich, GBM, kilka modeli naraz, `--dump` wyników poza próbką (train) | 112 |
 | `layer3_cal_confirm.py` | jednorazowe potwierdzenie na cal: uczenie na train, v1 LR vs wszystkie LR vs GBM, router ze strefą | 112 |
+| `analysis_noise_quality.py` | szum etykiet (AUROC na pytaniach z wyraźnym Δ, korelacja z Δ) i spadek jakości przy 20/40/50/60% do małego; domyślnie tylko train, bootstrap po grupach | 117 |
 | `export_layer3_params.py` | parametry warstwy 3 dla `RouterService` (plik `decider_path`): regresja na logit(kNN) i odpowiedziach modelu decyzyjnego, tylko train | 115 |
 | `layer3_llm_rate.py` | model językowy (np. duży Qwen przez DF) ocenia pytanie cyfrą 0–9 (różnica duży–mały, trudność); ścieżka odrzucona | 112 |
 

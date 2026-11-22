@@ -93,7 +93,7 @@ curl -s -X POST $B/admin/services/router -H "$A" -H "Content-Type: application/j
   \"small_model\":\"qwen3:8b\",\"large_model\":\"Qwen/Qwen3.8-27B-FP8\",
   \"index_path\":\"$R/data/router/router_index_train_cal.npz\",\"embedding_model\":\"nomic-embed-text\",
   \"k\":\"20\",\"threshold\":\"0.3\",\"heuristics_path\":\"$R/data/router_l1.json\",\"heuristic_threshold\":\"2\",
-  \"decider_path\":\"$R/data/router/router_l3_clef_v1.json\"}}"; echo
+  \"decider_path\":\"$R/data/router/router_l3_clef27b_v1.json\"}}"; echo
 curl -s -X POST "$B/admin/services/router/models/_?model_id=router" -H "$A" -H "Content-Type: application/json" \
   -d '{"spec":{}}'; echo</pre>
     <p class="muted" style="margin-top:8px">Przed wejściem na salę wyślij raz zapytania 2 i 4: pierwsze wywołanie ładuje modele do pamięci.</p>

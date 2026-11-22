@@ -116,6 +116,7 @@ Dodane 27.10 (dziennik, wpis 115). Warstwa 3 działa tylko, gdy wynik kNN jest w
 **Instalacja:** przy instalacji usługi `router` dodaj pole `decider_path` z pełną ścieżką do pliku parametrów:
 - `data/router/router_l3_d1_v1.json`: model `d1:3b`;
 - `data/router/router_l3_clef_v1.json`: model `clef:27b-q4_K_M`.
+- `data/router/router_l3_clef27b_v1.json`: te same wagi, model `clef:27b`. Od listopada df.test udostępnia Clefa pod tą nazwą (stara daje 404); to najpewniej inna wersja (odpowiedzi różnią się o ok. 0,01–0,05), ale decyzje w przykładach 6a i 6b są te same (0,517 i 0,266; wpis 117).
 
 Pole `model` w pliku musi być nazwą modelu, którą widzi DeepFellow (lokalnie albo przez mesh); jeśli jest inna, popraw ją w pliku. Wagi są uczone tylko na train (`eval/export_layer3_params.py`).
 

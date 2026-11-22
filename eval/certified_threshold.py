@@ -2,6 +2,7 @@
 # requires-python = ">=3.11"
 # dependencies = ["numpy", "scikit-learn", "scipy"]
 # ///
+import argparse
 import hashlib
 import sys
 from pathlib import Path
@@ -21,26 +22,44 @@ TARGETS_CRIT = (0.02, 0.05, 0.08, 0.10, 0.12, 0.15)
 TARGETS_LABEL = (0.15, 0.20, 0.25, 0.30)
 
 
-def upper_bound(k: int, n: int) -> float:
-    return 1.0 if k >= n else float(beta.ppf(CONF, k + 1, n - k))
+GRID = tuple(round(0.05 * i, 2) for i in range(1, 20))  # udziały pytań do małego dla wariantu Bonferroniego, ustalone z góry
+
+
+def upper_bound(k: int, n: int, conf: float = CONF) -> float:
+    return 1.0 if k >= n else float(beta.ppf(conf, k + 1, n - k))
 
 
 def pick(score: np.ndarray, bad: np.ndarray, target: float) -> tuple[float, int]:
+    """Learn-then-Test, sekwencja stała: od najmniejszej liczby pytań do małego, stop przy pierwszym progu bez gwarancji."""
     order = np.argsort(score, kind="stable")
     cum = np.cumsum(bad[order])
     best_n, best_t = 0, float("nan")
     for n in range(MIN_ACCEPTED, len(score) + 1):
-        if upper_bound(int(cum[n - 1]), n) <= target:
+        if upper_bound(int(cum[n - 1]), n) > target:
+            break
+        best_n, best_t = n, float(score[order][n - 1])
+    return best_t, best_n
+
+
+def pick_bonferroni(score: np.ndarray, bad: np.ndarray, target: float) -> tuple[float, int]:
+    """Każdy udział z siatki GRID testowany na poziomie (1 − CONF) / len(GRID); wybierany największy z gwarancją."""
+    order = np.argsort(score, kind="stable")
+    cum = np.cumsum(bad[order])
+    conf = 1 - (1 - CONF) / len(GRID)
+    best_n, best_t = 0, float("nan")
+    for f in GRID:
+        n = round(f * len(score))
+        if n >= MIN_ACCEPTED and upper_bound(int(cum[n - 1]), n, conf) <= target:
             best_n, best_t = n, float(score[order][n - 1])
     return best_t, best_n
 
 
-def main() -> None:
+def main(args: argparse.Namespace) -> None:
     questions = read("questions_v2_split.jsonl")
     emb = np.load(DATASETS_DIR / "embeddings_nomic.npy")
     row = {q["id"]: i for i, q in enumerate(questions)}
     labels = {r["id"]: r for r in read("labels.jsonl")}
-    ids = [q["id"] for q in questions if q["id"] in labels and labels[q["id"]]["split"] in ("train", "cal")]
+    ids = [q["id"] for q in questions if q["id"] in labels and labels[q["id"]]["split"] in args.splits]
     X = emb[[row[i] for i in ids]]
     group = np.array([questions[row[i]]["group"] for i in ids])
     delta = np.array([labels[i]["delta"] for i in ids])
@@ -57,7 +76,7 @@ def main() -> None:
         print(f"=== do małego wysyłamy pytania z niskim wynikiem; „błąd” = {name}; bazowo {bad.mean():.1%} wszystkich pytań ===")
         print(f"{'cel błędu ≤':>11s} | {'próg (FIT)':>10s} {'do małego':>10s} {'błąd obs.':>9s} {'górna gr. 95%':>13s} | {'CERT: do małego':>15s} {'błąd obs.':>9s} {'górna gr.':>9s} {'spełniony?':>10s} | {'jakość':>6s}")
         for r in targets:
-            t, n = pick(score[fit], bad[fit], r)
+            t, n = (pick_bonferroni if args.method == "bonferroni" else pick)(score[fit], bad[fit], r)
             if n == 0:
                 print(f"{r:11.0%} | brak progu (żaden próg nie daje gwarancji przy min. {MIN_ACCEPTED} przyjętych)")
                 continue
@@ -74,4 +93,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    p = argparse.ArgumentParser()
+    p.add_argument("--splits", nargs="+", default=["train", "cal"], choices=["train", "cal"])
+    p.add_argument("--method", choices=["ltt", "bonferroni"], default="ltt", help="ltt: sekwencja stała od najmniejszego n; bonferroni: siatka GRID")
+    main(p.parse_args())

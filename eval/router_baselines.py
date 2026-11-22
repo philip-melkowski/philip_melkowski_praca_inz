@@ -25,6 +25,13 @@ def read(name: str) -> list[dict[str, Any]]:
         return [json.loads(line) for line in f if line.strip()]
 
 
+def group_bootstrap(groups: np.ndarray, rng: np.random.Generator) -> np.ndarray:
+    """Indeksy jednej próby bootstrapowej losowanej po grupach prawie-duplikatów (jak w CV), a nie po pojedynczych pytaniach."""
+    uniq, inverse = np.unique(groups, return_inverse=True)
+    members = np.split(np.argsort(inverse, kind="stable"), np.cumsum(np.bincount(inverse))[:-1])
+    return np.concatenate([members[g] for g in rng.integers(0, len(uniq), len(uniq))])
+
+
 def pgr_curve(score: np.ndarray, q_large: np.ndarray, q_small: np.ndarray, rng: np.random.Generator) -> np.ndarray:
     n = len(score)
     order = np.lexsort((rng.random(n), -score))

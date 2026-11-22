@@ -2,6 +2,7 @@
 # requires-python = ">=3.11"
 # dependencies = ["numpy", "scikit-learn"]
 # ///
+import argparse
 import sys
 from pathlib import Path
 from typing import Any
@@ -13,7 +14,7 @@ from sklearn.model_selection import GroupKFold
 from sklearn.preprocessing import StandardScaler
 
 sys.path.insert(0, str(Path(__file__).parent))
-from router_baselines import DATASETS_DIR, SEED, knn_score, pgr_curve, read  # noqa: E402
+from router_baselines import DATASETS_DIR, SEED, group_bootstrap, knn_score, pgr_curve, read  # noqa: E402
 from router_layers import l1_features  # noqa: E402
 
 K = 20
@@ -21,12 +22,12 @@ BOOT = 1000
 THRESHOLDS = (0.15, 0.25, 0.35)
 
 
-def main() -> None:
+def main(args: argparse.Namespace) -> None:
     questions = read("questions_v2_split.jsonl")
     emb = np.load(DATASETS_DIR / "embeddings_nomic.npy")
     row = {q["id"]: i for i, q in enumerate(questions)}
     labels = {r["id"]: r for r in read("labels.jsonl")}
-    ids = [q["id"] for q in questions if q["id"] in labels and labels[q["id"]]["split"] in ("train", "cal")]
+    ids = [q["id"] for q in questions if q["id"] in labels and labels[q["id"]]["split"] in args.splits]
     X = emb[[row[i] for i in ids]]
     F = np.array([l1_features(questions[row[i]]["prompt"], questions[row[i]]["tokens"]) for i in ids])
     meta = [labels[i] for i in ids]
@@ -38,7 +39,7 @@ def main() -> None:
     tokens = np.array([questions[row[i]]["tokens"] for i in ids], dtype=float)
     folds = list(GroupKFold(n_splits=5).split(X, groups=group))
     rng = np.random.default_rng(SEED)
-    print(f"train+cal: {len(ids)} pytań, walidacja krzyżowa po grupach (5 części); test nie jest używany\n")
+    print(f"{'+'.join(args.splits)}: {len(ids)} pytań w {len(set(group))} grupach, walidacja krzyżowa po grupach (5 części), bootstrap po {args.boot_by}; test nie jest używany\n")
 
     for thr in THRESHOLDS:
         y = delta > thr
@@ -53,7 +54,8 @@ def main() -> None:
             oof["L2 kNN k=20"][te] = knn_score(X[te] @ X[tr].T, y[tr].astype(float), K)
             oof["L1+L2 LR"][te] = LogisticRegression(C=1.0, max_iter=3000).fit(np.hstack([X[tr], Ftr]), y[tr]).decision_function(np.hstack([X[te], Fte]))
         n = len(ids)
-        boots = [b for b in (rng.integers(0, n, n) for _ in range(BOOT)) if 0 < y[b].sum() < n]
+        draw = (lambda: group_bootstrap(group, rng)) if args.boot_by == "grupach" else (lambda: rng.integers(0, n, n))
+        boots = [b for b in (draw() for _ in range(BOOT)) if 0 < y[b].sum() < len(b)]
         res: dict[str, np.ndarray] = {
             name: np.array([(roc_auc_score(y[b], s[b]), pgr_curve(s[b], ql[b], qs[b], rng).mean()) for b in boots]) for name, s in oof.items()
         }
@@ -68,4 +70,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    p = argparse.ArgumentParser()
+    p.add_argument("--splits", nargs="+", default=["train", "cal"], choices=["train", "cal"])
+    p.add_argument("--boot-by", choices=["grupach", "pytaniach"], default="grupach", help="jednostka losowania w bootstrapie")
+    main(p.parse_args())
