@@ -47,8 +47,10 @@ Ollama na df-5070ti-03 (RTX 5070 Ti), wołana przez tunel SSH (czasy zawierają 
 - d1 nie działa przez `/v1/systemone` w DF: katalog DF (`static/ollama-min.json`) zalicza `d1:3b` do zwykłych modeli językowych. Modele decyzyjne w katalogu: Clef, Clef-flash, nimble, nimble-v3, tev1. Do wdrożenia d1 trzeba go dopisać do katalogu (zmiana w DF) albo użyć modelu z listy. Pomiar zrobiony bezpośrednio na Ollamie (czas modelu nie zależy od DF).
 - Rozmiaru Clefa 27B nie sprawdziłem (katalog DF go nie podaje), więc nie wiem, czy zmieści się na tej karcie.
 
+### 7. Cele przed testem (wpis 118)
+- Dopisana aktualizacja w `CELE_PRZED_TESTEM.md` (propozycja): moc C1 ok. 37–54%, hipoteza główna router − „sama długość” (moc ok. 99%), Bonferroni, przed otwarciem testu dokończyć etykiety 66 pytań testowych z ponownych odpowiedzi (komputer prywatny).
+
 ## W toku
-- Cele przed testem (`CELE_PRZED_TESTEM.md`): aktualizacja z policzoną mocą C1.
 - Szkice kolejnych rozdziałów pracy.
 
 ## Do decyzji autora
