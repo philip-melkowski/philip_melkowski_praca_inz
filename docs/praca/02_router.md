@@ -34,6 +34,25 @@ Interpretacja praktyczna (poza próbką): próg 0,3 kieruje 54% zapytań do duż
 
 Odporność (299 zapytań z cal): literówki (3% liter), parafrazy i zamiana ok. 20% słów na synonimy zmieniają decyzję dla 6–10% zapytań (losowe wyniki: 42–48%); korelacja wyników z oryginałem 0,92–0,95. Opóźnienie warstw 1+2 (natywna Ollama, M1 8 GB, bez DF): p50 20,6 ms, p90 65,5 ms; kNN trwa 0,08 ms.
 
+## 4a. Analizy uzupełniające (dopisane 2026-11-22, tylko train, wpisy 117–118)
+
+**Szum etykiet.** Na pytaniach z wyraźną różnicą jakości (Δ > 0,4 wobec Δ ≤ 0) AUROC kNN rośnie z 0,687 do 0,749 [0,722; 0,772]; korelacja Spearmana wyniku z ciągłym Δ wynosi 0,33. Część „sufitu” to więc pytania blisko progu, na których etykieta jest niepewna, a nie tylko brak informacji w tekście. Pytania, na których mały model jest wyraźnie lepszy (Δ ≤ −0,1), router myli z trudnymi (AUROC 0,58 wobec Δ > 0,5).
+
+**Spadek jakości wobec „zawsze duży”** (jak w Hybrid LLM; jakość 0,847, „zawsze mały” 0,618):
+
+| Ruch do małego | kNN | samo źródło | losowo |
+|---|---|---|---|
+| 20% | −2,9% [2,2; 3,6] | −2,7% | −5,4% |
+| 40% | −7,1% | −7,5% | −10,8% |
+| 50% | −9,6% | −10,5% | −13,5% |
+| 60% | −12,1% | −13,6% | −16,2% |
+
+Router zmniejsza stratę jakości wobec losowania o ok. 25–45% (więcej przy mniejszym ruchu do małego); przy małym udziale ruchu do małego modelu (20%) samo źródło daje podobny wynik.
+
+**Progi z gwarancją** (górna granica Clopper–Pearson, metoda Bonferroniego na siatce udziałów, D20): na train błąd krytyczny (Δ > 0,5 wysłane do małego) ≤ 15% przy 65% ruchu do małego; COMPLEX ≤ 30% przy 40%; niższe cele bez progu. Wcześniejsza tabela (prezentacja, slajd 9) była liczona procedurą, która nie dawała poprawnej gwarancji.
+
+**Nowe źródła** (Dolly, CodeChat, Arena 140k; 1050 pytań `extra_train`): kNN uczony na starych danych ma na nich AUROC 0,616, a w obrębie jednego źródła 0,54–0,59; po dołożeniu nowych pytań do indeksu (CV) 0,675, na starych bez zmian (0,687 → 0,691). Router słabo przenosi się na rodzaje zapytań, których nie ma w indeksie.
+
 ## 5. Ograniczenia i dalsze kroki
 
-Test poza dziedziną i błąd krytyczny dopiero na zbiorze test (jednokrotne otwarcie, po zatwierdzeniu celów: `../CELE_PRZED_TESTEM.md`); `RouterService` nie był jeszcze uruchomiony z prawdziwymi modelami **[UZUPEŁNIĆ]**; pomiar opóźnienia przez DF i na docelowym sprzęcie **[UZUPEŁNIĆ]**; zgoda promotora **[UZUPEŁNIĆ]**.
+Test poza dziedziną i błąd krytyczny dopiero na zbiorze test (jednokrotne otwarcie, po zatwierdzeniu celów: `../CELE_PRZED_TESTEM.md`); `RouterService` działa z prawdziwymi modelami, testy awarii i restartu zaliczone (rozdział o implementacji); pełny benchmark routera w DF na docelowym sprzęcie **[UZUPEŁNIĆ]**; zgoda promotora **[UZUPEŁNIĆ]**.

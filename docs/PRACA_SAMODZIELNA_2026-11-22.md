@@ -50,8 +50,13 @@ Ollama na df-5070ti-03 (RTX 5070 Ti), wołana przez tunel SSH (czasy zawierają 
 ### 7. Cele przed testem (wpis 118)
 - Dopisana aktualizacja w `CELE_PRZED_TESTEM.md` (propozycja): moc C1 ok. 37–54%, hipoteza główna router − „sama długość” (moc ok. 99%), Bonferroni, przed otwarciem testu dokończyć etykiety 66 pytań testowych z ponownych odpowiedzi (komputer prywatny).
 
+### 8. Szkice pracy (wpis 118)
+- Nowe: `praca/03_implementacja_df.md` (architektura w DF, przebieg decyzji, awarie, testy, opóźnienie), `praca/04_warstwa3.md` (eksperyment z modelami decyzyjnymi, tabele wyników, koszt czasu, wdrożenie, wnioski).
+- `praca/02_router.md`: dopisana sekcja 4a (szum etykiet, spadek jakości, progi Bonferroniego, nowe źródła) i poprawione zdanie o testach z prawdziwymi modelami.
+- Do napisania przez autora (lub w kolejnej sesji): wstęp, przegląd literatury, ewaluacja na teście, ograniczenia, wnioski, deklaracja użycia narzędzi AI.
+
 ## W toku
-- Szkice kolejnych rozdziałów pracy.
+- Nic; dalsze kroki wymagają decyzji autora (lista niżej).
 
 ## Do decyzji autora
 1. Podział nowych pytań: czy `extra_val` (449) ma być świeżym zbiorem walidacyjnym zamiast cal.
