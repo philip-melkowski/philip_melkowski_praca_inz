@@ -1,3 +1,4 @@
+import argparse
 import json
 import re
 import subprocess
@@ -81,14 +82,14 @@ def score_humaneval(content: str, gold: dict[str, Any], prompt: str) -> bool | N
     return r.returncode == 0
 
 
-def main() -> None:
+def main(args: argparse.Namespace) -> None:
     questions: dict[str, dict[str, Any]] = {}
     with QUESTIONS.open(encoding="utf-8") as f:
         for line in f:
             r = json.loads(line)
             if r["type"] == "gold":
                 questions[r["id"]] = r
-    with ANSWERS.open(encoding="utf-8") as f:
+    with (DATASETS_DIR / args.answers).open(encoding="utf-8") as f:
         answers = [a for a in map(json.loads, f) if a["id"] in questions]
 
     def score(a: dict[str, Any]) -> dict[str, Any]:
@@ -111,7 +112,7 @@ def main() -> None:
 
     with ThreadPoolExecutor(max_workers=8) as pool:
         scored = list(pool.map(score, answers))
-    OUT.write_text("\n".join(json.dumps(s, ensure_ascii=False) for s in scored) + "\n", encoding="utf-8")
+    (DATASETS_DIR / args.output).write_text("\n".join(json.dumps(s, ensure_ascii=False) for s in scored) + "\n", encoding="utf-8")
 
     table: dict[tuple[str, str], list[bool | None]] = defaultdict(list)
     for s in scored:
@@ -122,4 +123,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    p = argparse.ArgumentParser()
+    p.add_argument("--answers", default=ANSWERS.name)
+    p.add_argument("--output", default=OUT.name)
+    main(p.parse_args())

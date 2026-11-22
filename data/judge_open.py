@@ -87,6 +87,9 @@ async def run(args: argparse.Namespace) -> None:
                 by_id[a["id"]].append(a)
 
     ids = sorted(questions)
+    if args.only_ids:
+        keep = set((DATASETS_DIR / args.only_ids).read_text(encoding="utf-8").split())
+        ids = [i for i in ids if i in keep]
     random.Random(args.seed).shuffle(ids)
     if args.limit:
         ids = ids[: args.limit]
@@ -169,6 +172,7 @@ def main() -> None:
     p.add_argument("--model", required=True)
     p.add_argument("--questions", default="questions_v2_split.jsonl", help="plik pytań w data/datasets/")
     p.add_argument("--answers", default="answers.jsonl", help="plik odpowiedzi w data/datasets/")
+    p.add_argument("--only-ids", default="", help="plik z listą id pytań do oceny (np. changed_ids.txt)")
     p.add_argument("--output", default=str(DATASETS_DIR / "judge_open.jsonl"))
     p.add_argument("--limit", type=int, default=0)
     p.add_argument("--seed", type=int, default=1)

@@ -1,6 +1,6 @@
 # STATUS: od tego pliku zaczyna każda sesja
 
-Stan na: **2026-11-22**. Ostatni wpis dziennika: **122**. Plik jest importowany z `CLAUDE.md`, więc musi być krótki (≤ 100 linii; sprawdza to `tools/check_docs.py`). Szczegóły są w dokumentach, do których odsyłam; **liczb nie kopiuj z innych miejsc bez sprawdzenia, tu jest ich tylko tyle, ile trzeba**.
+Stan na: **2026-11-22**. Ostatni wpis dziennika: **123**. Plik jest importowany z `CLAUDE.md`, więc musi być krótki (≤ 100 linii; sprawdza to `tools/check_docs.py`). Szczegóły są w dokumentach, do których odsyłam; **liczb nie kopiuj z innych miejsc bez sprawdzenia, tu jest ich tylko tyle, ile trzeba**.
 
 **Obowiązek na koniec sesji:** zaktualizuj ten plik (data, „w toku”, „następne kroki”, numer ostatniego wpisu), dopisz wpis do `DZIENNIK.md`, uruchom `uv run --python 3.13 tools/check_docs.py`. Commit i push tylko na prośbę autora.
 
@@ -15,6 +15,15 @@ Praca inżynierska: `RouterService` w DeepFellow Infra (DF) wybiera dla każdego
 - **Integracja DF:** `RouterService` jest w klonie DF (`kod/deepfellow-infra`, gałąź `feat/router-service`, fork `philip-melkowski/deepfellow-infra`; upstream `simplito` nigdy). 27.10 gałąź przeniesiona (rebase) na aktualny `main` z GitLaba, który ma już `/v1/systemone` (wpis 115). Ma warstwy 1–2, awarię → duży; test z prawdziwymi Qwenami OK (wpis 70, narzut ok. 13 ms). **Warstwa 3 dodana 27.10** (opcjonalna, `decider_path`; zestaw v1 + regresja logistyczna, tylko w strefie 0,20–0,45, błąd lub limit 5 s → duży); działa na żywo (pokaz na seminarium 28.10, wpis 116). **Testy E (awaria embeddingów) i G (restart DF) zaliczone 22.11** (wpis 117). Słowa kluczowe dopasowywane jako całe słowa (poprawka „prove”/„improve”, commit d654a30, wypchnięty do forka). Clef na df.test nazywa się teraz `clef:27b` (inna wersja niż q4_K_M; plik `router_l3_clef27b_v1.json`). Gałąź po rebase wypchnięta do forka (`5a633c7`); klon na komputerze prywatnym trzeba zrównać z forkiem.
 - **Nowe dane (wpisy 105–109):** 1500 dodatkowych pytań (Dolly, CodeChat, Arena 140k): odpowiedzi dużego i małego (3 próbki) wygenerowane; ucięte przy 2048 powtórzone z limitem 4096; **decyzja: ocenić tak, jak są** (limit 4096 to część protokołu). **22.11 ocenione sędzią (1498/1500, ok. 4,5 USD), etykiety `labels_extra.jsonl` (COMPLEX 49,9%), podział-propozycja `extra_train` 1051 / `extra_val` 449** (wpis 118). Pliki tylko na komputerze służbowym (poza gitem).
 - **Dokumenty pracy:** szkice 5 części (`docs/praca/`: wstęp i literatura, dane, router, implementacja w DF, warstwa 3; z [UZUPEŁNIĆ]/[SPRAWDZIĆ]); brak ewaluacji na teście, ograniczeń i wniosków. Prezentacja: plik Keynote autora, wersja zaktualizowana 27.10 o warstwę 3 i stan prac (15 slajdów, poza repozytorium, wpis 114; zob. `INDEX.md`).
+
+## ZADANIE DLA KOMPUTERA PRYWATNEGO (od 2026-11-22, wpis 123)
+Autor uruchomi je zdaniem „zrób zadanie dla komputera prywatnego ze STATUS, hasło: …”. Hasło podaje autor (nie ma go w repozytorium). Zgoda autora na sędziego: do 20 USD łącznie (22.11), z czego ok. 4,5 USD zużyte. Kolejno, w repozytorium (`inz/deepfellow-router`):
+1. `git pull`; odszyfrować: `openssl enc -d -aes-256-cbc -pbkdf2 -in data/transfer/answers_rerun4096_main.jsonl.enc -out data/datasets/answers_rerun4096_main.jsonl -pass pass:<hasło>` (511 ponownych odpowiedzi z limitem 4096 na stare pytania).
+2. `uv run --python 3.13 data/merge_main_reruns.py` → `answers_v3.jsonl`, `changed_ids.txt` (oryginał `answers.jsonl` bez zmian; sprawdzić komunikat o niezgodnych liczbach).
+3. `uv run --python 3.13 data/score_gold.py --answers answers_v3.jsonl --output scores_gold_v3.jsonl`.
+4. `uv run --python 3.13 data/judge_open.py --model gemini-3.8-flash --questions questions_v2_split.jsonl --answers answers_v3.jsonl --only-ids changed_ids.txt --output judge_open_v3_changed.jsonl --concurrency 8` (najpierw `--limit 3` na próbę; dociągnąć błędy drugim uruchomieniem).
+5. `uv run --python 3.13 data/finalize_v3.py combine`, potem `uv run --python 3.13 data/make_labels.py --gold scores_gold_v3.jsonl --judge judge_open_v3.jsonl --out labels_v3.jsonl`, potem `uv run --python 3.13 data/finalize_v3.py export`.
+6. Commit i push **tylko** `data/labels/` (same liczby, bez treści; repozytorium jest publiczne) oraz wpisu w dzienniku (koszt, liczby zmian etykiet, w tym w teście). Plików z `data/datasets/` nie dodawać. Potem usunąć to zadanie ze STATUS.
 
 ## W toku / następne kroki (propozycje asystenta, nie decyzje; kolejność do ustalenia z autorem)
 1. Nowe pytania ocenione i z etykietami (wpis 118). Zostaje: ocena zmienionych odpowiedzi pomiaru głównego (511 ponownych z 4096) na komputerze prywatnym; decyzja o roli `extra_val` i o dołożeniu nowych pytań do indeksu. Bieżąca notatka: `PRACA_SAMODZIELNA_2026-11-22.md`.
