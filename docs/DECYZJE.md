@@ -29,6 +29,7 @@ Statusy: **obowiązuje** / **zastąpiona** (przez kogo) / **odrzucona** / **prop
 | D14 | Awaria klasyfikatora lub małego modelu (404/408/429/5xx) → duży model | A | obowiązuje | 49 |
 | D14a | Wersja routera do testu końcowego: warstwy 1 + 2; warstwa 3 poza rdzeniem do decyzji go/no-go. Cele C1–C6: `CELE_PRZED_TESTEM.md` (**propozycja, niezatwierdzona**) | As | obowiązuje; C1–C6 czekają | 49 |
 | D20 | Progi certyfikowane (gwarancja odsetka błędów wśród pytań wysłanych do małego): metoda Bonferroniego na z góry ustalonej siatce udziałów 5%, 10%, …, 95% (każdy na poziomie 0,05/19), górna granica Clopper–Pearson; ścisłe Learn-then-Test od n = 50 odrzucone, bo nie daje żadnego progu (`eval/certified_threshold.py --method bonferroni`) | A | obowiązuje (decyzja autora 22.11) | 117 |
+| D21 | Dodatkowe pytania (Dolly, CodeChat, Arena 140k; cel z planu: powiększenie danych): 1051 pytań (`extra_train`) dołączone do danych uczących i do indeksu routera; 449 (`extra_val`, 30% grup każdego źródła, nieoglądane) to świeży zbiór do sprawdzania pomysłów zamiast zużytego cal; cal i test bez zmian. Uzasadnienie: cal był używany kilka razy (D15, D15a), a nowe źródła poprawiają router na nowych typach zapytań bez straty na starych (wpis 118) | As (autor zlecił wybór 22.11) | obowiązuje; wersja routera do testu z indeksem train + cal + `extra_train` | 118, 119 |
 
 ## Warstwa 3
 
